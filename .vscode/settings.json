@@ -1,0 +1,10 @@
+{
+    "cSpell.words": ["Swipeable"],
+    "[json]": {
+        "editor.quickSuggestions": {
+            "strings": true
+        },
+        "editor.suggest.insertMode": "replace"
+    },
+    "eslint.enable": false
+}
