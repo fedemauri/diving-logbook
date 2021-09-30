@@ -33,6 +33,7 @@ import {
     arrayUnion,
     collection,
     doc,
+    addDoc,
     setDoc,
     updateDoc,
 } from 'firebase/firestore';
@@ -54,15 +55,16 @@ function CreateLog() {
         const user = auth.currentUser;
         const userUid = user.uid;
 
-        const userCollection = doc(db, 'user', userUid);
-        updateDoc(userCollection, {
-            divingLog: arrayUnion({ ...values, stops: stops }),
+        const userCollection = collection(db, 'user', userUid, 'log');
+        addDoc(userCollection, {
+            ...values,
+            stops: stops,
         })
             .then((response) => {
                 console.log('Document written with ID: ', response);
             })
             .catch((e) => {
-                console.error(e)
+                console.error(e);
             });
     };
 
