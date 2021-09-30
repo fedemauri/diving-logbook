@@ -175,6 +175,12 @@ function CreateLog() {
                                     multiline
                                     rows={3}
                                     rowsMax={6}
+                                    onChange={(value) => {
+                                        handleChange(
+                                            value.target.value,
+                                            'note'
+                                        );
+                                    }}
                                 />
                             </Grid>
                         </Grid>
