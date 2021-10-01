@@ -112,6 +112,7 @@ dist
 
 #configurations
 /src/config
+/client/src/config
 
 # testing
 /coverage
