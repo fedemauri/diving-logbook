@@ -4,6 +4,9 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { auth, db } from '../config/firebase';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { CircularProgress } from '@mui/material';
+import { coordinateMatch, getCoordinateObj } from '../helper/helper';
 
 function LogDetails() {
     let { id } = useParams();
@@ -19,7 +22,6 @@ function LogDetails() {
     const fetchData = () => {
         const userUid = user.uid;
         const logCollection = doc(db, 'user', userUid, 'log', id);
-        console.log('logCollection', logCollection);
 
         getDoc(logCollection)
             .then((response) => {
@@ -31,11 +33,38 @@ function LogDetails() {
             });
     };
 
+    if (isLoading) return <CircularProgress />;
+
     return (
         <div>
-            <h1>log details</h1>
+            <h1>{`${data.place} - Details`}</h1>
+            {data?.coordinate && coordinateMatch(data.coordinate) && (
+                <DiveMap coordinate={data.coordinate} />
+            )}
         </div>
     );
 }
+
+const DiveMap = ({ coordinate }) => {
+    const containerStyle = {
+        width: '100%',
+        height: '400px',
+    };
+
+    const position = getCoordinateObj(coordinate);
+
+    return null;
+    return (
+        <LoadScript googleMapsApiKey='AIzaSyA_kIIObNxM3qcL0AklCy5QDVe9F_KpVtk'>
+            <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={position}
+                zoom={13}
+            >
+                <Marker position={position} />
+            </GoogleMap>
+        </LoadScript>
+    );
+};
 
 export default LogDetails;

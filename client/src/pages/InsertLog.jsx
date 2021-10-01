@@ -61,7 +61,9 @@ function CreateLog() {
             stops: stops,
         })
             .then((response) => {
-                console.log('Document written with ID: ', response);
+                console.log('Document written with ID: ', response.id);
+                if (response?.id)
+                    window.location.href = `/details/${response.id}`;
             })
             .catch((e) => {
                 console.error(e);

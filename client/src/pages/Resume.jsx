@@ -12,7 +12,14 @@ import {
     Grid,
     Box,
     Link,
+    CircularProgress,
+    Avatar,
+    CardHeader,
+    CardMedia,
+    styled,
 } from '@mui/material';
+import { coordinateMatch } from '../helper/helper';
+import staticMap from './../images/staticmap.png';
 
 function DivingResume() {
     const [logs, setLogs] = useState(null);
@@ -43,7 +50,7 @@ function DivingResume() {
         fetchLogs();
     }, []);
 
-    if (isLoading) return null;
+    if (isLoading) return <CircularProgress />;
     return (
         <div>
             <h1>Diving resume</h1>
@@ -59,8 +66,14 @@ function DivingResume() {
                     }}
                 >
                     <Grid container spacing={2}>
-                        {logs.map((element) => {
-                            return <LogCard key={element.id} data={element} />;
+                        {logs.map((element, index) => {
+                            return (
+                                <LogCard
+                                    key={element.id}
+                                    data={element}
+                                    index={index}
+                                />
+                            );
                         })}
                     </Grid>
                 </Box>
@@ -68,17 +81,45 @@ function DivingResume() {
         </div>
     );
 }
-//{data.date.seconds}
 
-const LogCard = ({ data }) => {
+const LogCard = ({ data, index }) => {
     const date = fromUnixTime(data.date.seconds);
     const printableDate = format(date, 'dd MMMM yyyy - HH:mm');
     let coordinate = data.coordinate;
-    let coordinateLink = '';
+    let coordinateLink = staticMap;
     if (coordinate) {
         coordinate = coordinate.replace(/\s+/g, '');
-        coordinateLink = `http://www.google.com/maps/place/${coordinate}`;
+        if (coordinateMatch(coordinate))
+            coordinateLink = `https://maps.googleapis.com/maps/api/staticmap?center=${coordinate}&zoom=13&size=400x400&key=AIzaSyAnqMFf2Lo1wYL3bp1XuiPJrrnUc9AFzgs`;
     }
+
+    const InfoExtContainer = styled('div')(({ theme }) => ({
+        display: 'flex',
+        justifyContent: 'center',
+    }));
+
+    const InfoContainer = styled('div')(({ theme }) => ({
+        textDecoration: 'none',
+        padding: '0.8rem',
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: '0.8rem',
+        transition: 'background-color 100ms ease-in-out',
+    }));
+
+    const ValueContainer = styled('div')(({ theme }) => ({
+        color: '#1c9eff',
+        fontWeight: 'bold',
+        transformOrigin: 'bottom',
+        transform: 'scaleY(1.3)',
+        transition: 'color 100ms ease-in-out',
+    }));
+
+    const MeasureContainer = styled('div')(({ theme }) => ({
+        color: '#afafaf',
+        fontSize: '0.85rem',
+        fontWeight: 'normal',
+    }));
 
     return (
         <Grid item xs={12} sm={12} md={4}>
@@ -90,30 +131,71 @@ const LogCard = ({ data }) => {
                     justifyContent: 'space-between',
                 }}
             >
-                <CardContent>
-                    <Typography
-                        sx={{ fontSize: 14 }}
-                        color='text.secondary'
-                        gutterBottom
-                    >
-                        {printableDate}
-                    </Typography>
-                    <Typography variant='h5' component='div'>
-                        {data.place}
-                    </Typography>
-                    {coordinate && (
-                        <Typography sx={{ mb: 1.5 }} color='text.secondary'>
-                            <Link
-                                href={coordinateLink}
-                                underline='hover'
-                                target='_blank'
-                            >
-                                Map
-                            </Link>
-                        </Typography>
-                    )}
+                <CardHeader
+                    avatar={
+                        <Avatar sx={{ bgcolor: '#f43648cc' }} aria-label='log'>
+                            {index + 1}
+                        </Avatar>
+                    }
+                    title={data.place}
+                    subheader={printableDate}
+                />
 
-                    {data.note && (
+                <CardMedia
+                    component='img'
+                    height='194'
+                    image={coordinateLink}
+                    alt='Paella dish'
+                />
+
+                <CardContent>
+                    <Grid container>
+                        <Grid item xs={6}>
+                            <InfoExtContainer>
+                                <Typography
+                                    variant='h4'
+                                    sx={{
+                                        textAlign: 'center',
+                                        width: '50%',
+                                        margin: '0',
+                                        boxSizing: 'border-box',
+                                    }}
+                                >
+                                    <InfoContainer>
+                                        <ValueContainer>
+                                            {data['max-depth']}
+                                        </ValueContainer>
+                                        <MeasureContainer>
+                                            Depth
+                                        </MeasureContainer>
+                                    </InfoContainer>
+                                </Typography>
+                            </InfoExtContainer>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <InfoExtContainer>
+                                <Typography
+                                    variant='h4'
+                                    sx={{
+                                        textAlign: 'center',
+                                        width: '50%',
+                                        margin: '0',
+                                        boxSizing: 'border-box',
+                                    }}
+                                >
+                                    <InfoContainer>
+                                        <ValueContainer>
+                                            {data['dive-time']}
+                                        </ValueContainer>
+                                        <MeasureContainer>
+                                            Time
+                                        </MeasureContainer>
+                                    </InfoContainer>
+                                </Typography>
+                            </InfoExtContainer>
+                        </Grid>
+                    </Grid>
+                    {data.note ? (
                         <Typography
                             variant='body2'
                             sx={{
@@ -128,6 +210,23 @@ const LogCard = ({ data }) => {
                             }}
                         >
                             {data.note}
+                        </Typography>
+                    ) : (
+                        <Typography
+                            variant='subtitle1'
+                            sx={{
+                                display: 'block',
+                                textOverflow: 'ellipsis',
+                                wordWrap: 'break-word',
+                                overflow: 'hidden',
+                                maxHeight: '3em',
+                                lineHeight: '1.5em',
+                                textAlign: 'center',
+                                fontSize: '0.8rem',
+                                color: '#afafaf',
+                            }}
+                        >
+                            {'- No description -'}
                         </Typography>
                     )}
                 </CardContent>
