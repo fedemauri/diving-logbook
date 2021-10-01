@@ -3,7 +3,7 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { auth, db } from '../config/firebase';
+import { auth, db, dynamicApiKey } from '../config/firebase';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import { CircularProgress } from '@mui/material';
 import { coordinateMatch, getCoordinateObj } from '../helper/helper';
@@ -53,9 +53,8 @@ const DiveMap = ({ coordinate }) => {
 
     const position = getCoordinateObj(coordinate);
 
-    return null;
     return (
-        <LoadScript googleMapsApiKey='AIzaSyA_kIIObNxM3qcL0AklCy5QDVe9F_KpVtk'>
+        <LoadScript googleMapsApiKey={dynamicApiKey}>
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={position}

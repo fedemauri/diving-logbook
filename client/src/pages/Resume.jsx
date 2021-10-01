@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { auth, db } from '../config/firebase';
+import { auth, db, staticMapKey } from '../config/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { format, fromUnixTime } from 'date-fns';
 import {
@@ -90,7 +90,7 @@ const LogCard = ({ data, index }) => {
     if (coordinate) {
         coordinate = coordinate.replace(/\s+/g, '');
         if (coordinateMatch(coordinate))
-            coordinateLink = `https://maps.googleapis.com/maps/api/staticmap?center=${coordinate}&zoom=13&size=400x400&key=AIzaSyAnqMFf2Lo1wYL3bp1XuiPJrrnUc9AFzgs`;
+            coordinateLink = `https://maps.googleapis.com/maps/api/staticmap?center=${coordinate}&zoom=13&size=400x400&key=${staticMapKey}`;
     }
 
     const InfoExtContainer = styled('div')(({ theme }) => ({
