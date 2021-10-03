@@ -13,6 +13,7 @@ import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import DateTimePicker from '@mui/lab/DateTimePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
+import PublicIcon from '@mui/icons-material/Public';
 
 import {
     Accordion,
@@ -21,6 +22,7 @@ import {
     Divider,
     FormControl,
     FormHelperText,
+    IconButton,
     InputAdornment,
     InputLabel,
     MenuItem,
@@ -29,21 +31,16 @@ import {
 } from '@mui/material';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import { useState } from 'react';
-import {
-    arrayUnion,
-    collection,
-    doc,
-    addDoc,
-    setDoc,
-    updateDoc,
-} from 'firebase/firestore';
+import { collection, doc, addDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
+import MapCoordinateModal from '../container/MapCoordinateModal';
 
 const theme = createTheme();
 
 function CreateLog() {
     const [values, setValue] = useState({});
     const [stops, setStops] = useState([]);
+    const [openMapModal, setOpenMapModal] = useState(false);
 
     const handleChange = (newValue, field) => {
         setValue({ ...values, [field]: newValue });
@@ -87,127 +84,170 @@ function CreateLog() {
                     <Typography component='h1' variant='h5'>
                         Create Diving Log
                     </Typography>
-                    <Box
-                        component='form'
-                        onSubmit={handleSubmit}
-                        noValidate
-                        sx={{ mt: 1, width: '100%' }}
-                    >
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={4}>
-                                <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                >
-                                    <DateTimePicker
-                                        label='Date & Time'
-                                        name='datetime'
-                                        id='datetime'
-                                        value={values.date ?? null}
-                                        onChange={(value) => {
-                                            handleChange(value, 'date');
-                                        }}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                margin='normal'
-                                                sx={{ width: '100%' }}
-                                            />
-                                        )}
-                                    />
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <TextField
-                                    margin='normal'
-                                    required
-                                    fullWidth
-                                    name='place'
-                                    label='Place'
-                                    type='text'
-                                    id='place'
-                                    value={values.place ?? ''}
-                                    onChange={(value) => {
-                                        handleChange(
-                                            value.target.value,
-                                            'place'
-                                        );
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <TextField
-                                    margin='normal'
-                                    fullWidth
-                                    name='coordinate'
-                                    label='Coordinate'
-                                    type='text'
-                                    id='coordinate'
-                                    value={values.coordinate ?? ''}
-                                    onChange={(value) => {
-                                        handleChange(
-                                            value.target.value,
-                                            'coordinate'
-                                        );
-                                    }}
-                                />
-                                <FormHelperText id='component-helper-text'>
-                                    Use "45.160, 8.969" format
-                                </FormHelperText>
-                            </Grid>
-                            <DivingLog
-                                values={values}
-                                handleChange={handleChange}
-                            />
-                            <DecompressionStops
-                                stops={stops}
-                                setStops={setStops}
-                            />
-                            <DivingParams
-                                values={values}
-                                handleChange={handleChange}
-                            />
-                            <Equipments
-                                values={values}
-                                handleChange={handleChange}
-                            />
-                            <Grid item xs={12} sm={12}>
-                                <TextField
-                                    sx={{ width: '100%' }}
-                                    placeholder='Notes'
-                                    multiline
-                                    rows={3}
-                                    rowsMax={6}
-                                    onChange={(value) => {
-                                        handleChange(
-                                            value.target.value,
-                                            'note'
-                                        );
-                                    }}
-                                />
-                            </Grid>
-                        </Grid>
-                        {/* <FormControlLabel
-                            control={
-                                <Checkbox value='remember' color='primary' />
-                            }
-                            label='Remember me'
-                        /> */}
-                        <Button
-                            type='submit'
-                            fullWidth
-                            variant='contained'
-                            sx={{ mt: 3 }}
-                        >
-                            Save
-                        </Button>
-                    </Box>
+                    <LogForm
+                        handleSubmit={handleSubmit}
+                        handleChange={handleChange}
+                        values={values}
+                        setOpenMapModal={setOpenMapModal}
+                        stops={stops}
+                        setStops={setStops}
+                        readOnly={false}
+                    />
                 </Box>
+                <MapCoordinateModal
+                    handleClose={setOpenMapModal}
+                    open={openMapModal}
+                    setCoordinate={(value) => handleChange(value, 'coordinate')}
+                />
             </Container>
         </ThemeProvider>
     );
 }
 
-const DivingLog = ({ values, handleChange }) => {
+const LogForm = ({
+    handleSubmit,
+    handleChange,
+    values,
+    setOpenMapModal,
+    stops,
+    setStops,
+    readOnly,
+}) => {
+    return (
+        <Box
+            component='form'
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1, width: '100%' }}
+        >
+            <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DateTimePicker
+                            label='Date & Time'
+                            name='datetime'
+                            id='datetime'
+                            value={values.date ?? null}
+                            onChange={(value) => {
+                                handleChange(value, 'date');
+                            }}
+                            disabled={readOnly}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    margin='normal'
+                                    sx={{ width: '100%' }}
+                                />
+                            )}
+                        />
+                    </LocalizationProvider>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <TextField
+                        margin='normal'
+                        required
+                        fullWidth
+                        name='place'
+                        label='Place'
+                        type='text'
+                        id='place'
+                        disabled={readOnly}
+                        value={values.place ?? ''}
+                        onChange={(value) => {
+                            handleChange(value.target.value, 'place');
+                        }}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <TextField
+                        margin='normal'
+                        fullWidth
+                        name='coordinate'
+                        label='Coordinate'
+                        type='text'
+                        id='coordinate'
+                        disabled={readOnly}
+                        InputProps={{
+                            endAdornment: (
+                                <>
+                                    {readOnly && <></>}
+                                    {!readOnly && (
+                                        <IconButton
+                                            aria-label='show map'
+                                            onClick={() => {
+                                                if (!readOnly)
+                                                    setOpenMapModal(true);
+                                            }}
+                                            onMouseDown={(event) =>
+                                                event.preventDefault()
+                                            }
+                                            edge='end'
+                                        >
+                                            <PublicIcon />
+                                        </IconButton>
+                                    )}
+                                </>
+                            ),
+                        }}
+                        value={values.coordinate ?? ''}
+                        onChange={(value) => {
+                            handleChange(value.target.value, 'coordinate');
+                        }}
+                    />
+                    {!readOnly && (
+                        <FormHelperText id='component-helper-text'>
+                            Use "45.160, 8.969" format
+                        </FormHelperText>
+                    )}
+                </Grid>
+                <DivingLog
+                    values={values}
+                    handleChange={handleChange}
+                    readOnly={readOnly}
+                />
+                <DecompressionStops
+                    stops={stops}
+                    setStops={setStops}
+                    readOnly={readOnly}
+                />
+                <DivingParams
+                    values={values}
+                    handleChange={handleChange}
+                    readOnly={readOnly}
+                />
+                <Equipments
+                    values={values}
+                    handleChange={handleChange}
+                    readOnly={readOnly}
+                />
+                <Grid item xs={12} sm={12}>
+                    <TextField
+                        sx={{ width: '100%' }}
+                        placeholder='Notes'
+                        multiline
+                        rows={3}
+                        disabled={readOnly}
+                        onChange={(value) => {
+                            handleChange(value.target.value, 'note');
+                        }}
+                    />
+                </Grid>
+            </Grid>
+            {!readOnly && (
+                <Button
+                    type='submit'
+                    fullWidth
+                    variant='contained'
+                    sx={{ mt: 3 }}
+                >
+                    Save
+                </Button>
+            )}
+        </Box>
+    );
+};
+
+const DivingLog = ({ values, handleChange, readOnly }) => {
     return (
         <>
             <Grid item xs={12} sm={6}>
@@ -218,6 +258,7 @@ const DivingLog = ({ values, handleChange }) => {
                     label='Max Depth'
                     type='text'
                     id='max-depth'
+                    disabled={readOnly}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position='end'>m</InputAdornment>
@@ -237,6 +278,7 @@ const DivingLog = ({ values, handleChange }) => {
                     label='Dive Time'
                     type='text'
                     id='dive-time'
+                    disabled={readOnly}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position='end'>min</InputAdornment>
@@ -252,7 +294,7 @@ const DivingLog = ({ values, handleChange }) => {
     );
 };
 
-const DecompressionStops = ({ stops, setStops }) => {
+const DecompressionStops = ({ stops, setStops, readOnly }) => {
     const createNewStop = () => {
         setStops([...stops, { meter: '', time: '' }]);
     };
@@ -285,6 +327,7 @@ const DecompressionStops = ({ stops, setStops }) => {
                                 label='Meter stop'
                                 type='text'
                                 id='m-stop'
+                                disabled={readOnly}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position='end'>
@@ -314,6 +357,7 @@ const DecompressionStops = ({ stops, setStops }) => {
                                 label='Time stop'
                                 type='text'
                                 id='min-stop'
+                                disabled={readOnly}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position='end'>
@@ -335,17 +379,19 @@ const DecompressionStops = ({ stops, setStops }) => {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={2}>
-                            <Button
-                                variant='outline'
-                                sx={{ marginTop: '1.5rem' }}
-                                onClick={() => {
-                                    removeStop(index);
-                                }}
-                            >
-                                <IndeterminateCheckBoxIcon />
-                            </Button>
-                        </Grid>
+                        {!readOnly && (
+                            <Grid item xs={12} sm={2}>
+                                <Button
+                                    variant='outline'
+                                    sx={{ marginTop: '1.5rem' }}
+                                    onClick={() => {
+                                        removeStop(index);
+                                    }}
+                                >
+                                    <IndeterminateCheckBoxIcon />
+                                </Button>
+                            </Grid>
+                        )}
                     </React.Fragment>
                 );
             });
@@ -353,7 +399,7 @@ const DecompressionStops = ({ stops, setStops }) => {
 
     return (
         <Grid item xs={12} sm={12}>
-            <Accordion sx={{ marginTop: '1rem' }}>
+            <Accordion sx={{ marginTop: '1rem' }} defaultExpanded={readOnly}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls='panel1bh-content'
@@ -368,29 +414,37 @@ const DecompressionStops = ({ stops, setStops }) => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Divider light />
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={12}>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <Typography
-                                    variant='h5'
-                                    sx={{ marginTop: '1rem' }}
+                    <Grid
+                        container
+                        spacing={2}
+                        justifyContent='center'
+                        alignItems='center'
+                    >
+                        {!readOnly && (
+                            <Grid item xs={12} sm={12}>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                    }}
                                 >
-                                    Insert stop
-                                </Typography>{' '}
-                                <Button
-                                    variant='outline'
-                                    sx={{ marginTop: '1rem' }}
-                                    onClick={createNewStop}
-                                >
-                                    <ControlPointIcon />
-                                </Button>
-                            </Box>
-                        </Grid>
+                                    <Typography
+                                        variant='h5'
+                                        sx={{ marginTop: '1rem' }}
+                                    >
+                                        Insert stop
+                                    </Typography>{' '}
+                                    <Button
+                                        variant='outline'
+                                        sx={{ marginTop: '1rem' }}
+                                        onClick={createNewStop}
+                                    >
+                                        <ControlPointIcon />
+                                    </Button>
+                                </Box>
+                            </Grid>
+                        )}
+
                         {renderStops()}
                     </Grid>
                 </AccordionDetails>
@@ -399,7 +453,7 @@ const DecompressionStops = ({ stops, setStops }) => {
     );
 };
 
-const Equipments = ({ values, handleChange }) => {
+const Equipments = ({ values, handleChange, readOnly }) => {
     const accessoriesOptions = [
         { name: 'Dive computer', id: 'computer' },
         { name: 'Dive Lights', id: 'lights' },
@@ -413,7 +467,7 @@ const Equipments = ({ values, handleChange }) => {
 
     return (
         <Grid item xs={12} sm={12}>
-            <Accordion sx={{ marginTop: '1rem' }}>
+            <Accordion sx={{ marginTop: '1rem' }} defaultExpanded={readOnly}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls='panel1bh-content'
@@ -442,6 +496,7 @@ const Equipments = ({ values, handleChange }) => {
                                 label='Cylinder capacity'
                                 type='text'
                                 id='capacity'
+                                disabled={readOnly}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position='end'>
@@ -467,6 +522,7 @@ const Equipments = ({ values, handleChange }) => {
                                 label='%O2'
                                 type='text'
                                 id='oxigen'
+                                disabled={readOnly}
                                 value={values.oxigen ?? ''}
                                 InputProps={{
                                     endAdornment: (
@@ -494,6 +550,7 @@ const Equipments = ({ values, handleChange }) => {
                                 label='Suit type'
                                 select
                                 id='suit-type'
+                                disabled={readOnly}
                                 value={values.suitType ?? ''}
                                 onChange={(value) => {
                                     console.log(value);
@@ -519,6 +576,7 @@ const Equipments = ({ values, handleChange }) => {
                                 label='Thickness of the suit'
                                 type='text'
                                 id='thickness'
+                                disabled={readOnly}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position='end'>
@@ -551,6 +609,7 @@ const Equipments = ({ values, handleChange }) => {
                                     id='accessories'
                                     name='accessories'
                                     multiple
+                                    disabled={readOnly}
                                     value={values.accessories ?? []}
                                     onChange={(value) => {
                                         console.log(value);
@@ -579,10 +638,10 @@ const Equipments = ({ values, handleChange }) => {
     );
 };
 
-const DivingParams = ({ values, handleChange }) => {
+const DivingParams = ({ values, handleChange, readOnly }) => {
     return (
         <Grid item xs={12} sm={12}>
-            <Accordion sx={{ marginTop: '1rem' }}>
+            <Accordion sx={{ marginTop: '1rem' }} defaultExpanded={readOnly}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls='panel1bh-content'
@@ -611,6 +670,7 @@ const DivingParams = ({ values, handleChange }) => {
                                 label='Tank pressure on enter'
                                 type='text'
                                 id='tank-pressure-in'
+                                disabled={readOnly}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position='end'>
@@ -636,6 +696,7 @@ const DivingParams = ({ values, handleChange }) => {
                                 label='Tank pressure on exit'
                                 type='text'
                                 id='tank-pressure-out'
+                                disabled={readOnly}
                                 value={values['tank-pressure-out'] ?? ''}
                                 InputProps={{
                                     endAdornment: (
@@ -666,6 +727,7 @@ const DivingParams = ({ values, handleChange }) => {
                                 label='Air temperature'
                                 type='text'
                                 id='air-temperature'
+                                disabled={readOnly}
                                 value={values['air-temperature'] ?? ''}
                                 InputProps={{
                                     endAdornment: (
@@ -690,6 +752,7 @@ const DivingParams = ({ values, handleChange }) => {
                                 label='Water temperature'
                                 type='text'
                                 id='water-temperature'
+                                disabled={readOnly}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position='end'>
@@ -719,6 +782,7 @@ const DivingParams = ({ values, handleChange }) => {
                                 label='Ballast'
                                 type='text'
                                 id='ballast'
+                                disabled={readOnly}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position='end'>
@@ -740,3 +804,4 @@ const DivingParams = ({ values, handleChange }) => {
 };
 
 export default CreateLog;
+export { LogForm, DivingLog, DecompressionStops, Equipments, DivingParams };

@@ -42,6 +42,9 @@
     height: 2rem;
 }
 
-.date-picker{
-    
+#log-details {
+    .Mui-disabled {
+        color: black;
+        -webkit-text-fill-color: rgb(0, 0, 0);
+    }
 }
