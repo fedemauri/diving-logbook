@@ -1,14 +1,27 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import { auth } from '../config/firebase';
-import Account from '../pages/Account';
-import Home from '../pages/home';
-import CreateLog from '../pages/InsertLog';
-import LogDetails from '../pages/LogDetails';
-import Login from '../pages/Login';
-import DivingResume from '../pages/Resume';
-import SignUp from '../pages/SignUp';
 import PrivateRoute from './PrivateRoute';
+const Account = React.lazy(() =>
+    import(/* webpackChunkName: "Account" */ '../pages/Account')
+);
+const Home = React.lazy(() =>
+    import(/* webpackChunkName: "Home" */ '../pages/Home')
+);
+const CreateLog = React.lazy(() =>
+    import(/* webpackChunkName: "CreateLog" */ '../pages/InsertLog')
+);
+const LogDetails = React.lazy(() =>
+    import(/* webpackChunkName: "LogDetails" */ '../pages/LogDetails')
+);
+const Login = React.lazy(() =>
+    import(/* webpackChunkName: "Login" */ '../pages/Login')
+);
+const DivingResume = React.lazy(() =>
+    import(/* webpackChunkName: "DivingResume" */ '../pages/Resume')
+);
+const SignUp = React.lazy(() =>
+    import(/* webpackChunkName: "SignUp" */ '../pages/SignUp')
+);
 
 function Router() {
     return (

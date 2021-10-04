@@ -2,7 +2,6 @@ import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -31,9 +30,13 @@ import {
 } from '@mui/material';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import { useState } from 'react';
-import { collection, doc, addDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
-import MapCoordinateModal from '../container/MapCoordinateModal';
+const MapCoordinateModal = React.lazy(() =>
+    import(
+        /* webpackChunkName: "MapCoordinateModal" */ '../container/MapCoordinateModal'
+    )
+);
 
 const theme = createTheme();
 
@@ -94,11 +97,15 @@ function CreateLog() {
                         readOnly={false}
                     />
                 </Box>
-                <MapCoordinateModal
-                    handleClose={setOpenMapModal}
-                    open={openMapModal}
-                    setCoordinate={(value) => handleChange(value, 'coordinate')}
-                />
+                {openMapModal && (
+                    <MapCoordinateModal
+                        handleClose={setOpenMapModal}
+                        open={openMapModal}
+                        setCoordinate={(value) =>
+                            handleChange(value, 'coordinate')
+                        }
+                    />
+                )}
             </Container>
         </ThemeProvider>
     );
