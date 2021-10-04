@@ -90,7 +90,7 @@ const LogCard = ({ data, index }) => {
     if (coordinate) {
         coordinate = coordinate.replace(/\s+/g, '');
         if (coordinateMatch(coordinate))
-            coordinateLink = `https://maps.googleapis.com/maps/api/staticmap?center=${coordinate}&zoom=13&size=400x400&key=${staticMapKey}`;
+            coordinateLink = `https://maps.googleapis.com/maps/api/staticmap?center=${coordinate}&zoom=12&size=400x400&markers=color:red|size:mid|${coordinate}&key=${staticMapKey}`;
     }
 
     const InfoExtContainer = styled('div')(({ theme }) => ({
