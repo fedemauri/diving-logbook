@@ -1,11 +1,22 @@
-import { Box, CircularProgress, Container, Grid } from '@mui/material';
+// @ts-nocheck
+import {
+    Box,
+    CircularProgress,
+    Container,
+    Grid,
+    Card,
+    CardContent,
+    styled,
+    Typography,
+} from '@mui/material';
 import { LoadScript, GoogleMap, Marker } from '@react-google-maps/api';
 import { collection, getDocs } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { auth, db, dynamicApiKey } from '../config/firebase';
 import { coordinateMatch, getCoordinateObj } from '../helper/helper';
-import { ResponsiveCalendar } from '@nivo/calendar';
-import { ResponsiveLine } from '@nivo/line';
+import { Calendar } from '@nivo/calendar';
+import { Line } from '@nivo/line';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 function Home() {
     const [data, setData] = useState(null);
@@ -191,38 +202,84 @@ function Home() {
                 sx={{
                     mt: 1,
                     width: '100%',
-                    height: '400px',
                     marginTop: 1,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}
             >
-                <Grid container spacing={2}>
-                    <Grid item xs={10} sm={10} md={9}>
-                        <HeatMap getAllCoordinate={getAllCoordinate} />
+                <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+                    <Grid
+                        item
+                        xs={12}
+                        sm={12}
+                        md={9}
+                        sx={{ minHeight: '50vh' }}
+                    >
+                        <Card sx={{ height: '100%' }}>
+                            <CardContent
+                                sx={{
+                                    height: '100%',
+                                }}
+                            >
+                                <HeatMap getAllCoordinate={getAllCoordinate} />
+                            </CardContent>
+                        </Card>
                     </Grid>
-                    <Grid item xs={2} sm={2} md={3}>
-                        <Info />
+                    <Grid item xs={12} sm={12} md={3}>
+                        <Card sx={{ height: '100%' }}>
+                            <CardContent
+                                sx={{
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <Info />
+                            </CardContent>
+                        </Card>
                     </Grid>
                 </Grid>
             </Box>
             <Box
                 sx={{
-                    mt: 1,
+                    mt: 2,
                     width: '100%',
-                    marginTop: 1,
+                    marginTop: 2,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}
             >
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={12} md={6} sx={{ height: '600px' }}>
-                        <DivingTimeChart />
+                <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+                    <Grid
+                        item
+                        xs={12}
+                        sm={12}
+                        md={12}
+                        lg={6}
+                        sx={{ height: 'auto', minHeight: '50vh' }}
+                    >
+                        <Card sx={{ height: '100%' }}>
+                            <CardContent sx={{ height: '100%' }}>
+                                <DivingTimeChart />
+                            </CardContent>
+                        </Card>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} sx={{ height: '600px' }}>
-                        <DivingDepthChart />
+                    <Grid
+                        item
+                        xs={12}
+                        sm={12}
+                        md={12}
+                        lg={6}
+                        sx={{ height: 'auto', minHeight: '50vh' }}
+                    >
+                        <Card sx={{ height: '100%' }}>
+                            <CardContent sx={{ height: '100%' }}>
+                                <DivingDepthChart />
+                            </CardContent>
+                        </Card>
                     </Grid>
                 </Grid>
             </Box>
@@ -256,7 +313,112 @@ const HeatMap = ({ getAllCoordinate }) => {
 };
 
 const Info = ({}) => {
-    return <h1>mappa</h1>;
+    const InfoExtContainer = styled('div')(({ theme }) => ({
+        display: 'flex',
+        justifyContent: 'center',
+    }));
+
+    const InfoContainer = styled('div')(({ theme }) => ({
+        textDecoration: 'none',
+        padding: '0.8rem',
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: '0.8rem',
+        transition: 'background-color 100ms ease-in-out',
+    }));
+
+    const ValueContainer = styled('div')(({ theme }) => ({
+        color: '#1c9eff',
+        fontWeight: 'bold',
+        transformOrigin: 'bottom',
+        transform: 'scaleY(1.3)',
+        transition: 'color 100ms ease-in-out',
+    }));
+
+    const MeasureContainer = styled('div')(({ theme }) => ({
+        color: '#afafaf',
+        fontSize: '0.85rem',
+        fontWeight: 'normal',
+    }));
+
+    return (
+        <Grid container>
+            <Grid item xs={6}>
+                <InfoExtContainer>
+                    <Typography
+                        variant='h4'
+                        sx={{
+                            textAlign: 'center',
+                            width: '50%',
+                            margin: '0',
+                            boxSizing: 'border-box',
+                        }}
+                    >
+                        <InfoContainer>
+                            <ValueContainer>30</ValueContainer>
+                            <MeasureContainer>Max Depth</MeasureContainer>
+                        </InfoContainer>
+                    </Typography>
+                </InfoExtContainer>
+            </Grid>
+            <Grid item xs={6}>
+                <InfoExtContainer>
+                    <Typography
+                        variant='h4'
+                        sx={{
+                            textAlign: 'center',
+                            width: '50%',
+                            margin: '0',
+                            boxSizing: 'border-box',
+                        }}
+                    >
+                        <InfoContainer>
+                            <ValueContainer>50</ValueContainer>
+                            <MeasureContainer>Max Time</MeasureContainer>
+                        </InfoContainer>
+                    </Typography>
+                </InfoExtContainer>
+            </Grid>
+            <Grid item xs={6}>
+                <InfoExtContainer>
+                    <Typography
+                        variant='h4'
+                        sx={{
+                            textAlign: 'center',
+                            width: '50%',
+                            margin: '0',
+                            boxSizing: 'border-box',
+                        }}
+                    >
+                        <InfoContainer>
+                            <ValueContainer>50</ValueContainer>
+                            <MeasureContainer>
+                                Total Diving Time
+                            </MeasureContainer>
+                        </InfoContainer>
+                    </Typography>
+                </InfoExtContainer>
+            </Grid>
+            <Grid item xs={6}>
+                <InfoExtContainer>
+                    <Typography
+                        variant='h4'
+                        sx={{
+                            textAlign: 'center',
+                            width: '50%',
+                            margin: '0',
+                            boxSizing: 'border-box',
+                        }}
+                    >
+                        <InfoContainer>
+                            <ValueContainer>50</ValueContainer>
+                            <MeasureContainer>Diving Count</MeasureContainer>
+                        </InfoContainer>
+                    </Typography>
+                </InfoExtContainer>
+            </Grid>
+        </Grid>
+    );
 };
 
 const DivingTimeChart = ({}) => {
@@ -428,30 +590,60 @@ const DivingTimeChart = ({}) => {
     ];
 
     return (
-        <ResponsiveCalendar
-            data={data}
-            from='2015-03-01'
-            to='2019-07-12'
-            emptyColor='#eeeeee'
-            colors={['#61cdbb', '#97e3d5', '#e8c1a0', '#f47560']}
-            margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
-            yearSpacing={40}
-            monthBorderColor='#ffffff'
-            dayBorderWidth={2}
-            dayBorderColor='#ffffff'
-            legends={[
-                {
-                    anchor: 'bottom-right',
-                    direction: 'row',
-                    translateY: 36,
-                    itemCount: 4,
-                    itemWidth: 42,
-                    itemHeight: 36,
-                    itemsSpacing: 14,
-                    itemDirection: 'right-to-left',
-                },
-            ]}
-        />
+        <>
+            <AutoSizer style={{ width: '100%' }}>
+                {({ height, width }) => (
+                    <>
+                        <Typography
+                            variant='h5'
+                            sx={{
+                                textAlign: 'center',
+                                margin: '0',
+                                boxSizing: 'border-box',
+                            }}
+                        >
+                            Last 2 years divings
+                        </Typography>
+                        <Calendar
+                            height={height}
+                            width={width}
+                            data={data}
+                            from='2015-03-01'
+                            to='2016-07-12'
+                            emptyColor='#eeeeee'
+                            colors={[
+                                '#61cdbb',
+                                '#97e3d5',
+                                '#e8c1a0',
+                                '#f47560',
+                            ]}
+                            margin={{
+                                top: 40,
+                                right: 40,
+                                bottom: 40,
+                                left: 40,
+                            }}
+                            yearSpacing={40}
+                            monthBorderColor='#ffffff'
+                            dayBorderWidth={2}
+                            dayBorderColor='#ffffff'
+                            legends={[
+                                {
+                                    anchor: 'bottom-right',
+                                    direction: 'row',
+                                    translateY: 36,
+                                    itemCount: 4,
+                                    itemWidth: 42,
+                                    itemHeight: 36,
+                                    itemsSpacing: 14,
+                                    itemDirection: 'right-to-left',
+                                },
+                            ]}
+                        />
+                    </>
+                )}
+            </AutoSizer>
+        </>
     );
 };
 
@@ -515,71 +707,64 @@ const DivingDepthChart = ({}) => {
         },
     ];
     return (
-        <ResponsiveLine
-            data={data}
-            margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-            xScale={{ type: 'point' }}
-            yScale={{
-                type: 'linear',
-                min: 'auto',
-                max: 'auto',
-                stacked: true,
-                reverse: false,
-            }}
-            yFormat=' >-.2f'
-            axisTop={null}
-            axisRight={null}
-            axisBottom={{
-                orient: 'bottom',
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
-                legend: 'transportation',
-                legendOffset: 36,
-                legendPosition: 'middle',
-            }}
-            axisLeft={{
-                orient: 'left',
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
-                legend: 'Meter',
-                legendOffset: -40,
-                legendPosition: 'middle',
-            }}
-            pointSize={10}
-            pointColor={{ theme: 'background' }}
-            pointBorderWidth={2}
-            pointBorderColor={{ from: 'serieColor' }}
-            pointLabelYOffset={-12}
-            useMesh={true}
-            legends={[
-                {
-                    anchor: 'bottom-right',
-                    direction: 'column',
-                    justify: false,
-                    translateX: 100,
-                    translateY: 0,
-                    itemsSpacing: 0,
-                    itemDirection: 'left-to-right',
-                    itemWidth: 80,
-                    itemHeight: 20,
-                    itemOpacity: 0.75,
-                    symbolSize: 12,
-                    symbolShape: 'circle',
-                    symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                    effects: [
-                        {
-                            on: 'hover',
-                            style: {
-                                itemBackground: 'rgba(0, 0, 0, .03)',
-                                itemOpacity: 1,
-                            },
-                        },
-                    ],
-                },
-            ]}
-        />
+        <AutoSizer style={{ width: '100%' }}>
+            {({ height, width }) => (
+                <>
+                    <Typography
+                        variant='h5'
+                        sx={{
+                            textAlign: 'center',
+                            margin: '0',
+                            boxSizing: 'border-box',
+                        }}
+                    >
+                        Deep
+                    </Typography>
+                    <Line
+                        data={data}
+                        height={height - 20}
+                        width={width}
+                        margin={{ top: 20, right: 20, bottom: 50, left: 50 }}
+                        xScale={{ type: 'point' }}
+                        yScale={{
+                            type: 'linear',
+                            min: 'auto',
+                            max: 'auto',
+                            stacked: true,
+                            reverse: false,
+                        }}
+                        yFormat=' >-.2f'
+                        axisTop={null}
+                        axisRight={null}
+                        axisBottom={{
+                            orient: 'bottom',
+                            tickSize: 5,
+                            tickPadding: 5,
+                            tickRotation: 0,
+                            legend: 'transportation',
+                            legendOffset: 36,
+                            legendPosition: 'middle',
+                        }}
+                        axisLeft={{
+                            orient: 'left',
+                            tickSize: 5,
+                            tickPadding: 5,
+                            tickRotation: 0,
+                            legend: 'count',
+                            legendOffset: -40,
+                            legendPosition: 'middle',
+                        }}
+                        pointSize={10}
+                        pointColor={{ theme: 'background' }}
+                        pointBorderWidth={2}
+                        pointBorderColor={{ from: 'serieColor' }}
+                        pointLabelYOffset={-12}
+                        useMesh={true}
+                        legends={[]}
+                    />
+                </>
+            )}
+        </AutoSizer>
     );
 };
 
