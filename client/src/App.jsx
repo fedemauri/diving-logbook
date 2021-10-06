@@ -16,9 +16,9 @@ function App() {
     const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
-        onAuthStateChanged(auth, (userLoggged) => {
+        onAuthStateChanged(auth, (userLogged) => {
             if (user) {
-                setUser(userLoggged);
+                setUser(userLogged);
             } else {
                 setUser(null);
             }

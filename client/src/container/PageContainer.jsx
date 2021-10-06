@@ -99,7 +99,6 @@ export default function PageContainer({ children }) {
     const [open, setOpen] = React.useState(false);
 
     const user = auth.currentUser;
-    console.log('auth auth', user);
 
     const handleDrawerOpen = () => {
         setOpen(true);

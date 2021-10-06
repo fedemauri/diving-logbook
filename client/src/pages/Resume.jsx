@@ -32,12 +32,10 @@ function DivingResume() {
 
         getDocs(logCollection)
             .then((response) => {
-                console.log(response);
                 const logsList = [];
                 response.forEach((doc) => {
                     const data = { ...doc.data(), id: doc.id };
                     logsList.push(data);
-                    console.log(data);
                 });
                 if (logsList && logsList.length) setLogs(logsList);
             })

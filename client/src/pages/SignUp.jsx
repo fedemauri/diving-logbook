@@ -48,7 +48,6 @@ export default function SignUp() {
             name: data.get('firstName'),
             surname: data.get('lastName'),
         };
-        console.log(formData);
         const userRef = collection(db, 'users');
 
         createUserWithEmailAndPassword(auth, formData.email, formData.password)

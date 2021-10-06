@@ -3,8 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -12,7 +10,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../config/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Link as RouteLink } from 'react-router-dom';
@@ -40,7 +38,6 @@ const theme = createTheme();
 
 export default function SignIn() {
     const [error, setError] = useState('');
-    const user = auth.currentUser;
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -51,7 +48,7 @@ export default function SignIn() {
             password: data.get('password'),
         };
         signInWithEmailAndPassword(auth, formData.email, formData.password)
-            .then((userCredential) => {
+            .then(() => {
                 window.location.replace('/');
             })
             .catch((error) => {
@@ -63,24 +60,10 @@ export default function SignIn() {
     const signInWithGoogle = () => {
         signInWithPopup(auth, provider)
             .then((result) => {
-                // This gives you a Google Access Token. You can use it to access the Google API.
-                const credential =
-                    GoogleAuthProvider.credentialFromResult(result);
-                const token = credential.accessToken;
-                // The signed-in user info.
-                const user = result.user;
                 window.location.replace('/');
             })
             .catch((error) => {
-                // Handle Errors here.
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                // The email of the user's account used.
-                const email = error.email;
-                // The AuthCredential type that was used.
-                const credential =
-                    GoogleAuthProvider.credentialFromError(error);
-                // ...
+                console.error(error);
             });
     };
 

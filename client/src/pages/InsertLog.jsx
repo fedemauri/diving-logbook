@@ -61,7 +61,6 @@ function CreateLog() {
             stops: stops,
         })
             .then((response) => {
-                console.log('Document written with ID: ', response.id);
                 if (response?.id)
                     window.location.href = `/details/${response.id}`;
             })
@@ -307,7 +306,6 @@ const DecompressionStops = ({ stops, setStops, readOnly }) => {
     };
 
     const handleStopEdit = (index, type, value) => {
-        console.log(index, type, value);
         const newStops = [...stops];
         const selectedStop = newStops[index];
         selectedStop[type] = value;
@@ -344,10 +342,6 @@ const DecompressionStops = ({ stops, setStops, readOnly }) => {
                                 }}
                                 value={element.meter}
                                 onChange={(value) => {
-                                    console.log(
-                                        'value.target.value',
-                                        value.target.value
-                                    );
                                     handleStopEdit(
                                         index,
                                         'meter',
@@ -374,10 +368,6 @@ const DecompressionStops = ({ stops, setStops, readOnly }) => {
                                 }}
                                 value={element.time}
                                 onChange={(value) => {
-                                    console.log(
-                                        'value.target.value',
-                                        value.target.value
-                                    );
                                     handleStopEdit(
                                         index,
                                         'time',
@@ -560,7 +550,6 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                 disabled={readOnly}
                                 value={values.suitType ?? ''}
                                 onChange={(value) => {
-                                    console.log(value);
                                     handleChange(
                                         value.target.value,
                                         'suitType'
@@ -619,7 +608,6 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                     disabled={readOnly}
                                     value={values.accessories ?? []}
                                     onChange={(value) => {
-                                        console.log(value);
                                         handleChange(
                                             value.target.value,
                                             'accessories'

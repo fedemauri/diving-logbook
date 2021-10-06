@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { coordinateMatch, getCoordinateObj } from '../helper/helper';
 import { LogForm } from './InsertLog';
-import { fromUnixTime, format } from 'date-fns';
+import { fromUnixTime } from 'date-fns';
 
 const theme = createTheme();
 
@@ -36,7 +36,6 @@ function LogDetails() {
 
         getDoc(logCollection)
             .then((response) => {
-                console.log(response.data());
                 const fetchedData = response.data();
                 const date = fromUnixTime(fetchedData.date.seconds);
                 fetchedData.date = date;
