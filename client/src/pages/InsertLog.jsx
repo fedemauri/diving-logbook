@@ -18,6 +18,8 @@ import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
+    Autocomplete,
+    Chip,
     Divider,
     FormControl,
     FormHelperText,
@@ -119,6 +121,7 @@ const LogForm = ({
     setStops,
     readOnly,
 }) => {
+    const [inputValue, setInputValue] = useState('');
     return (
         <Box
             component='form'
@@ -226,6 +229,69 @@ const LogForm = ({
                     handleChange={handleChange}
                     readOnly={readOnly}
                 />
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        margin='normal'
+                        fullWidth
+                        name='guide'
+                        label='Guide'
+                        type='text'
+                        id='guide'
+                        disabled={readOnly}
+                        value={values['guide'] ?? ''}
+                        onChange={(value) => {
+                            handleChange(value.target.value, 'guide');
+                        }}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Autocomplete
+                        multiple
+                        id='partners'
+                        options={[]}
+                        freeSolo
+                        disabled={readOnly}
+                        onChange={(event, newValue) => {
+                            event.preventDefault();
+                            handleChange(newValue, 'partners');
+                        }}
+                        value={values['partners'] ?? []}
+                        renderTags={(value, getTagProps) => {
+                            return value.map((option, index) => {
+                                let props = { ...getTagProps({ index }) };
+                                if (readOnly)
+                                    props = {
+                                        ...getTagProps({ index }),
+                                        onDelete: null,
+                                    };
+                                return (
+                                    <Chip
+                                        variant='outlined'
+                                        label={option}
+                                        {...props}
+                                    />
+                                );
+                            });
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                margin='normal'
+                                fullWidth
+                                name='partners'
+                                label='Partners'
+                                type='text'
+                                id='partners'
+                                disabled={readOnly}
+                            />
+                        )}
+                    />
+                    {!readOnly && (
+                        <FormHelperText id='component-helper-text'>
+                            Insert name and press enter to add partner tag
+                        </FormHelperText>
+                    )}
+                </Grid>
                 <Grid item xs={12} sm={12}>
                     <TextField
                         sx={{ width: '100%' }}
