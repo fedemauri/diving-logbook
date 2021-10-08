@@ -136,7 +136,6 @@ export default function SignIn() {
                             Sign In
                         </Button>
                         <Button
-                            type='submit'
                             fullWidth
                             variant='outlined'
                             sx={{ mt: 3, mb: 2 }}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { auth, db, staticMapKey } from '../config/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { doc, deleteDoc, collection, onSnapshot } from 'firebase/firestore';
 import { format, fromUnixTime } from 'date-fns';
 import {
     Card,
@@ -20,33 +20,40 @@ import {
 } from '@mui/material';
 import { coordinateMatch } from '../helper/helper';
 import staticMap from './../images/staticmap.png';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 function DivingResume() {
     const [logs, setLogs] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [deleteModalId, setDeleteModalId] = useState(null);
     const user = auth.currentUser;
+    const userUid = user.uid;
 
     const fetchLogs = () => {
-        const userUid = user.uid;
         const logCollection = collection(db, 'user', userUid, 'log');
 
-        getDocs(logCollection)
-            .then((response) => {
-                const logsList = [];
-                response.forEach((doc) => {
-                    const data = { ...doc.data(), id: doc.id };
-                    logsList.push(data);
-                });
-                if (logsList && logsList.length) setLogs(logsList);
-            })
-            .then(() => {
-                setIsLoading(false);
+        onSnapshot(logCollection, (response) => {
+            const logsList = [];
+            response.forEach((doc) => {
+                const data = { ...doc.data(), id: doc.id };
+                logsList.push(data);
             });
+            if (logsList && logsList.length) setLogs(logsList);
+            setIsLoading(false);
+        });
     };
 
     useEffect(() => {
         fetchLogs();
     }, []);
+
+    const deleteLog = (id) => {
+        if (id)
+            deleteDoc(doc(db, 'user', userUid, 'log', id)).catch((e) => {
+                console.error(e);
+            });
+    };
 
     if (isLoading) return <CircularProgress />;
     return (
@@ -70,17 +77,33 @@ function DivingResume() {
                                     key={element.id}
                                     data={element}
                                     index={index}
+                                    setOpenDeleteModal={setOpenDeleteModal}
+                                    setDeleteModalId={setDeleteModalId}
                                 />
                             );
                         })}
                     </Grid>
                 </Box>
             </Container>
+            {openDeleteModal && (
+                <ConfirmationModal
+                    button={'Delete log'}
+                    text={'Are you sure you want to delete the log?'}
+                    title={'Delete log'}
+                    handleConfirm={() => {
+                        deleteLog(deleteModalId);
+                        console.log('delete log', deleteModalId);
+                    }}
+                    isOpen={openDeleteModal}
+                    id={deleteModalId}
+                    handleClose={setOpenDeleteModal}
+                />
+            )}
         </div>
     );
 }
 
-const LogCard = ({ data, index }) => {
+const LogCard = ({ data, index, setOpenDeleteModal, setDeleteModalId }) => {
     const date = fromUnixTime(data.date.seconds);
     const printableDate = format(date, 'dd MMMM yyyy - HH:mm');
     let coordinate = data.coordinate;
@@ -228,10 +251,26 @@ const LogCard = ({ data, index }) => {
                         </Typography>
                     )}
                 </CardContent>
-                <CardActions>
+                <CardActions
+                    sx={{
+                        display: 'flex',
+                        flex: 'row',
+                        justifyContent: 'space-between',
+                    }}
+                >
                     <Link href={`/details/${data.id}`} underline='hover'>
                         <Button size='small'>Details</Button>
                     </Link>
+
+                    <Button
+                        size='small'
+                        onClick={() => {
+                            setOpenDeleteModal(true);
+                            setDeleteModalId(data.id);
+                        }}
+                    >
+                        Delete
+                    </Button>
                 </CardActions>
             </Card>
         </Grid>
