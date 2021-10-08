@@ -34,6 +34,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
+import { coordinateMatch } from '../helper/helper';
 const MapCoordinateModal = React.lazy(() =>
     import(
         /* webpackChunkName: "MapCoordinateModal" */ '../container/MapCoordinateModal'
@@ -57,6 +58,9 @@ function CreateLog() {
         const user = auth.currentUser;
         const userUid = user.uid;
 
+        if (values?.coordinate && !coordinateMatch(values?.coordinate))
+            return false;
+
         const userCollection = collection(db, 'user', userUid, 'log');
         addDoc(userCollection, {
             ...values,
@@ -76,7 +80,7 @@ function CreateLog() {
             <Container component='main' maxWidth='xl'>
                 <Box
                     sx={{
-                        marginTop: 8,
+                        marginTop: 4,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -121,12 +125,10 @@ const LogForm = ({
     setStops,
     readOnly,
 }) => {
-    const [inputValue, setInputValue] = useState('');
     return (
         <Box
             component='form'
             onSubmit={handleSubmit}
-            noValidate
             sx={{ mt: 1, width: '100%' }}
         >
             <Grid container spacing={2}>
@@ -140,12 +142,14 @@ const LogForm = ({
                             onChange={(value) => {
                                 handleChange(value, 'date');
                             }}
+                            required
                             disabled={readOnly}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
                                     margin='normal'
                                     sx={{ width: '100%' }}
+                                    required
                                 />
                             )}
                         />
@@ -176,6 +180,10 @@ const LogForm = ({
                         type='text'
                         id='coordinate'
                         disabled={readOnly}
+                        error={
+                            values?.coordinate &&
+                            !coordinateMatch(values?.coordinate)
+                        }
                         InputProps={{
                             endAdornment: (
                                 <>
@@ -330,6 +338,7 @@ const DivingLog = ({ values, handleChange, readOnly }) => {
                     label='Max Depth'
                     type='text'
                     id='max-depth'
+                    required
                     disabled={readOnly}
                     InputProps={{
                         endAdornment: (
@@ -347,6 +356,7 @@ const DivingLog = ({ values, handleChange, readOnly }) => {
                     margin='normal'
                     fullWidth
                     name='dive-time'
+                    required
                     label='Dive Time'
                     type='text'
                     id='dive-time'

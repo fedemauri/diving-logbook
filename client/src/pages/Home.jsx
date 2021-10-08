@@ -341,6 +341,8 @@ const DivingTimeChart = ({ data }) => {
     }, [data]);
 
     const calendarData = getGroupedData();
+    const currentYear = new Date().getFullYear() + '';
+    const lastYear = new Date().getFullYear() - 1 + '';
 
     return (
         <>
@@ -361,8 +363,8 @@ const DivingTimeChart = ({ data }) => {
                             height={height}
                             width={width}
                             data={calendarData}
-                            from='2020'
-                            to='2021'
+                            from={lastYear}
+                            to={currentYear}
                             emptyColor='#eeeeee'
                             colors={[
                                 '#61cdbb',
