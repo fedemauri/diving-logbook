@@ -8,11 +8,11 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { LoadScript, GoogleMap, Marker } from '@react-google-maps/api';
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { dynamicApiKey } from '../config/firebase';
 
 function MapCoordinateModal({ handleClose, open, setCoordinate }) {
-    const [marker, setMarker] = useState(null);
+    const markerRef = useRef(null);
     const containerStyle = {
         width: '100%',
         height: '400px',
@@ -31,7 +31,7 @@ function MapCoordinateModal({ handleClose, open, setCoordinate }) {
             lat: parseFloat(lat),
             lng: parseFloat(lng),
         };
-        setMarker(coordinate);
+        markerRef.current = coordinate;
         setCoordinate(`${coordinate.lat},${coordinate.lng}`);
     };
 
@@ -42,10 +42,10 @@ function MapCoordinateModal({ handleClose, open, setCoordinate }) {
             open={!!open}
             onClose={() => handleClose(false)}
         >
-            <DialogTitle>Optional sizes</DialogTitle>
+            <DialogTitle>Select coordinate point</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    You can set my maximum width and whether to adapt or not.
+                    Double click on map to select a point
                 </DialogContentText>
                 <Box
                     sx={{
@@ -59,9 +59,11 @@ function MapCoordinateModal({ handleClose, open, setCoordinate }) {
                             mapContainerStyle={containerStyle}
                             center={center}
                             zoom={8}
-                            onClick={handleMapClick}
+                            onDblClick={handleMapClick}
                         >
-                            {marker && <Marker position={marker} />}
+                            {markerRef && markerRef.current && (
+                                <Marker position={markerRef.current} />
+                            )}
                         </GoogleMap>
                     </LoadScript>
                 </Box>
