@@ -35,6 +35,7 @@ import { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 import { coordinateMatch } from '../helper/helper';
+import { isValid } from 'date-fns';
 const MapCoordinateModal = React.lazy(() =>
     import(
         /* webpackChunkName: "MapCoordinateModal" */ '../container/MapCoordinateModal'
@@ -58,7 +59,12 @@ function CreateLog() {
         const user = auth.currentUser;
         const userUid = user.uid;
 
-        if (values?.coordinate && !coordinateMatch(values?.coordinate))
+        if (
+            values?.coordinate &&
+            !coordinateMatch(values?.coordinate) &&
+            values?.date &&
+            !isValid(values?.date)
+        )
             return false;
 
         const userCollection = collection(db, 'user', userUid, 'log');
@@ -150,6 +156,7 @@ const LogForm = ({
                                     margin='normal'
                                     sx={{ width: '100%' }}
                                     required
+                                    type='datetime-local'
                                 />
                             )}
                         />
@@ -336,7 +343,7 @@ const DivingLog = ({ values, handleChange, readOnly }) => {
                     fullWidth
                     name='max-depth'
                     label='Max Depth'
-                    type='text'
+                    type='number'
                     id='max-depth'
                     required
                     disabled={readOnly}
@@ -358,7 +365,7 @@ const DivingLog = ({ values, handleChange, readOnly }) => {
                     name='dive-time'
                     required
                     label='Dive Time'
-                    type='text'
+                    type='number'
                     id='dive-time'
                     disabled={readOnly}
                     InputProps={{
@@ -406,7 +413,7 @@ const DecompressionStops = ({ stops, setStops, readOnly }) => {
                                 fullWidth
                                 name='m-stop'
                                 label='Meter stop'
-                                type='text'
+                                type='number'
                                 id='m-stop'
                                 disabled={readOnly}
                                 InputProps={{
@@ -432,7 +439,7 @@ const DecompressionStops = ({ stops, setStops, readOnly }) => {
                                 fullWidth
                                 name='min-stop'
                                 label='Time stop'
-                                type='text'
+                                type='number'
                                 id='min-stop'
                                 disabled={readOnly}
                                 InputProps={{
@@ -567,7 +574,7 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                 fullWidth
                                 name='capacity'
                                 label='Cylinder capacity'
-                                type='text'
+                                type='number'
                                 id='capacity'
                                 disabled={readOnly}
                                 InputProps={{
@@ -593,7 +600,7 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                 fullWidth
                                 name='oxigen'
                                 label='%O2'
-                                type='text'
+                                type='number'
                                 id='oxigen'
                                 disabled={readOnly}
                                 value={values.oxigen ?? ''}
@@ -623,6 +630,7 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                 label='Suit type'
                                 select
                                 id='suit-type'
+                                type='number'
                                 disabled={readOnly}
                                 value={values.suitType ?? ''}
                                 onChange={(value) => {
@@ -646,7 +654,7 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                 fullWidth
                                 name='thickness'
                                 label='Thickness of the suit'
-                                type='text'
+                                type='number'
                                 id='thickness'
                                 disabled={readOnly}
                                 InputProps={{
@@ -739,7 +747,7 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                                 fullWidth
                                 name='tank-pressure-in'
                                 label='Tank pressure on enter'
-                                type='text'
+                                type='number'
                                 id='tank-pressure-in'
                                 disabled={readOnly}
                                 InputProps={{
@@ -765,7 +773,7 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                                 fullWidth
                                 name='tank-pressure-out'
                                 label='Tank pressure on exit'
-                                type='text'
+                                type='number'
                                 id='tank-pressure-out'
                                 disabled={readOnly}
                                 value={values['tank-pressure-out'] ?? ''}
@@ -796,7 +804,7 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                                 fullWidth
                                 name='air-temperature'
                                 label='Air temperature'
-                                type='text'
+                                type='number'
                                 id='air-temperature'
                                 disabled={readOnly}
                                 value={values['air-temperature'] ?? ''}
@@ -821,7 +829,7 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                                 fullWidth
                                 name='water-temperature'
                                 label='Water temperature'
-                                type='text'
+                                type='number'
                                 id='water-temperature'
                                 disabled={readOnly}
                                 InputProps={{
@@ -851,7 +859,7 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                                 fullWidth
                                 name='ballast'
                                 label='Ballast'
-                                type='text'
+                                type='number'
                                 id='ballast'
                                 disabled={readOnly}
                                 InputProps={{
