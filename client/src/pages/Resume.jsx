@@ -56,6 +56,8 @@ function DivingResume() {
     };
 
     if (isLoading) return <CircularProgress />;
+    if (!logs)
+        return <Typography variant='h4'>{'No data to display'}</Typography>;
     return (
         <div>
             <h1>Diving resume</h1>

@@ -10,11 +10,16 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import {
+    createUserWithEmailAndPassword,
+    updateProfile,
+    sendEmailVerification,
+} from 'firebase/auth';
 import { auth, db } from '../config/firebase';
 import { Link as RouteLink } from 'react-router-dom';
 import { useState } from 'react';
 import { collection, doc, setDoc } from 'firebase/firestore';
+import { Snackbar } from '@mui/material';
 
 function Copyright(props) {
     return (
@@ -38,6 +43,10 @@ const theme = createTheme();
 
 export default function SignUp() {
     const [error, setError] = useState('');
+    const [openSnackBar, setOpenSnackBar] = useState({
+        open: false,
+        message: '',
+    });
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -57,7 +66,16 @@ export default function SignUp() {
                     displayName: `${formData.name} ${formData.surname}`,
                 })
                     .then(() => {
-                        window.location.replace('/login');
+                        sendEmailVerification(auth.currentUser).then(() => {
+                            setOpenSnackBar({
+                                open: true,
+                                message:
+                                    'User created! The verification email has been sent. Verify your address before logging in',
+                            });
+                            setTimeout(() => {
+                                window.location.replace('/login');
+                            }, 2500);
+                        });
                     })
                     .catch((error) => {
                         console.error(error);
@@ -166,6 +184,16 @@ export default function SignUp() {
                     </Box>
                 </Box>
                 <Copyright sx={{ mt: 5 }} />
+                {openSnackBar && (
+                    <Snackbar
+                        open={openSnackBar.open}
+                        autoHideDuration={3000}
+                        onClose={() => {
+                            setOpenSnackBar({ ...openSnackBar, open: false });
+                        }}
+                        message={openSnackBar.message}
+                    />
+                )}
             </Container>
         </ThemeProvider>
     );

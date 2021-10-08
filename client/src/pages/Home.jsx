@@ -76,6 +76,8 @@ function Home() {
     };
 
     if (isLoading) return <CircularProgress />;
+    if (!data)
+        return <Typography variant='h4'>{'No data to display'}</Typography>;
     return (
         <Container component='main' maxWidth='xl'>
             <Box

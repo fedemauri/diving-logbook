@@ -10,11 +10,13 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { signInWithPopup } from 'firebase/auth';
+import { signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
 import { auth, provider } from '../config/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Link as RouteLink } from 'react-router-dom';
 import { useState } from 'react';
+import ForgotPasswordModal from '../container/ForgotPasswordModal';
+import { Snackbar } from '@mui/material';
 
 function Copyright(props) {
     return (
@@ -38,6 +40,11 @@ const theme = createTheme();
 
 export default function SignIn() {
     const [error, setError] = useState('');
+    const [openResetModal, setOpenResetModal] = useState(false);
+    const [openSnackBar, setOpenSnackBar] = useState({
+        open: false,
+        message: '',
+    });
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -64,6 +71,21 @@ export default function SignIn() {
             })
             .catch((error) => {
                 console.error(error);
+            });
+    };
+
+    const sendPasswordReset = (email) => {
+        console.log(email);
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                setOpenSnackBar({
+                    open: true,
+                    message: 'Password reset email sent!',
+                });
+            })
+            .catch((error) => {
+                const errorMessage = error.message;
+                setError(errorMessage);
             });
     };
 
@@ -145,7 +167,10 @@ export default function SignIn() {
                         </Button>
                         <Grid container>
                             <Grid item xs>
-                                <Link href='#' variant='body2'>
+                                <Link
+                                    onClick={setOpenResetModal}
+                                    variant='body2'
+                                >
                                     Forgot password?
                                 </Link>
                             </Grid>
@@ -158,6 +183,23 @@ export default function SignIn() {
                     </Box>
                 </Box>
                 <Copyright sx={{ mt: 8, mb: 4 }} />
+                {openResetModal && (
+                    <ForgotPasswordModal
+                        open={openResetModal}
+                        handleClose={setOpenResetModal}
+                        sendPasswordReset={sendPasswordReset}
+                    />
+                )}
+                {openSnackBar && (
+                    <Snackbar
+                        open={openSnackBar.open}
+                        autoHideDuration={3000}
+                        onClose={() => {
+                            setOpenSnackBar({ ...openSnackBar, open: false });
+                        }}
+                        message={openSnackBar.message}
+                    />
+                )}
             </Container>
         </ThemeProvider>
     );
