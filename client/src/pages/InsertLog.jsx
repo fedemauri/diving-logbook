@@ -13,17 +13,20 @@ import DateTimePicker from '@mui/lab/DateTimePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import PublicIcon from '@mui/icons-material/Public';
-
+import CancelIcon from '@mui/icons-material/CancelTwoTone';
+import Compressor from 'compressorjs';
 import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
     Autocomplete,
+    Badge,
     Chip,
     Divider,
     FormControl,
     FormHelperText,
     IconButton,
+    Input,
     InputAdornment,
     InputLabel,
     MenuItem,
@@ -32,10 +35,11 @@ import {
 } from '@mui/material';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import { useState } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { auth, db, storage } from '../config/firebase';
 import { coordinateMatch } from '../helper/helper';
 import { isValid } from 'date-fns';
+import { ref, uploadBytes, getDownloadURL } from '@firebase/storage';
 const MapCoordinateModal = React.lazy(() =>
     import(
         /* webpackChunkName: "MapCoordinateModal" */ '../container/MapCoordinateModal'
@@ -47,7 +51,10 @@ const theme = createTheme();
 function CreateLog() {
     const [values, setValue] = useState({});
     const [stops, setStops] = useState([]);
+    const [photos, setPhotos] = useState([]);
     const [openMapModal, setOpenMapModal] = useState(false);
+    const user = auth.currentUser;
+    const userUid = user.uid;
 
     const handleChange = (newValue, field) => {
         setValue({ ...values, [field]: newValue });
@@ -55,10 +62,6 @@ function CreateLog() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-
-        const user = auth.currentUser;
-        const userUid = user.uid;
-
         if (
             values?.coordinate &&
             !coordinateMatch(values?.coordinate) &&
@@ -73,12 +76,57 @@ function CreateLog() {
             stops: stops,
         })
             .then((response) => {
-                if (response?.id)
+                if (response?.id && (!photos || photos.length === 0))
                     window.location.href = `/details/${response.id}`;
+                else if (response?.id)
+                    uploadPhoto(response.id, () => {
+                        window.location.href = `/details/${response.id}`;
+                    });
             })
             .catch((e) => {
                 console.error(e);
             });
+    };
+
+    const uploadPhoto = (logId, callback) => {
+        if (photos && photos.length !== 0 && logId) {
+            const uploadPromises = [];
+            const storageRefs = [];
+
+            //Upload images and save promises and refs
+            photos.map((image) => {
+                const storageRef = ref(storage, `${logId}/${image.name}`);
+                const promise = uploadBytes(storageRef, image);
+                uploadPromises.push(promise);
+                storageRefs.push(storageRef);
+            });
+
+            //Use refs to get urls
+            Promise.allSettled(uploadPromises).then((results) => {
+                const downloadUrls = [];
+                results.forEach((result, index) => {
+                    if (result.status === 'fulfilled') {
+                        const urlPromise = getDownloadURL(storageRefs[index]);
+
+                        //Store all urls
+                        downloadUrls.push(urlPromise);
+                    }
+                });
+                Promise.allSettled(downloadUrls).then((urlRes) => {
+                    const urlToPush = [];
+                    //After url getting store and update log
+                    urlRes.forEach((url) => {
+                        if (url && url.status === 'fulfilled') {
+                            urlToPush.push(url.value);
+                        }
+                    });
+                    const photoRef = doc(db, 'user', userUid, 'log', logId);
+                    updateDoc(photoRef, {
+                        photosUrl: urlToPush,
+                    }).then(() => callback());
+                });
+            });
+        }
     };
 
     return (
@@ -105,6 +153,8 @@ function CreateLog() {
                         setOpenMapModal={setOpenMapModal}
                         stops={stops}
                         setStops={setStops}
+                        photos={photos}
+                        setPhotos={setPhotos}
                         readOnly={false}
                     />
                 </Box>
@@ -122,6 +172,27 @@ function CreateLog() {
     );
 }
 
+const PhotoPreview = ({ photo, removePhoto }) => {
+    const img = photo ? URL.createObjectURL(photo) : null;
+    const alt = photo ? photo.name : null;
+    return (
+        <div style={{ marginRight: '1rem' }}>
+            <Badge
+                overlap='circular'
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                badgeContent={
+                    <CancelIcon
+                        sx={{ cursor: 'pointer', color: '#4e4e4e' }}
+                        onClick={removePhoto}
+                    />
+                }
+            >
+                <Avatar src={img} alt={alt} sx={{ width: 80, height: 80 }} />
+            </Badge>
+        </div>
+    );
+};
+
 const LogForm = ({
     handleSubmit,
     handleChange,
@@ -129,8 +200,43 @@ const LogForm = ({
     setOpenMapModal,
     stops,
     setStops,
+    photos,
+    setPhotos,
     readOnly,
 }) => {
+    const removePhoto = (index) => {
+        const tempPhotos = [...photos];
+        tempPhotos.splice(index, 1);
+        setPhotos(tempPhotos);
+    };
+
+    const addPhotos = (files) => {
+        const allCompressedImage = [];
+        const promise = new Promise((resolve) => {
+            files.map((file) => {
+                new Compressor(file, {
+                    quality: 0.7,
+                    mimeType: 'image/webp',
+                    maxHeight: 1080,
+                    success(result) {
+                        const file = new File([result], result.name);
+                        allCompressedImage.push(file);
+                        if (allCompressedImage.length === files.length)
+                            resolve(allCompressedImage);
+                    },
+                    error(err) {
+                        console.error(err.message);
+                    },
+                });
+            });
+        });
+
+        promise
+            .then((data) => {
+                setPhotos([...photos, ...data]);
+            })
+            .catch((e) => console.error(e));
+    };
     return (
         <Box
             component='form'
@@ -244,7 +350,7 @@ const LogForm = ({
                     handleChange={handleChange}
                     readOnly={readOnly}
                 />
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={readOnly ? 6 : 5}>
                     <TextField
                         margin='normal'
                         fullWidth
@@ -259,7 +365,7 @@ const LogForm = ({
                         }}
                     />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={readOnly ? 6 : 5}>
                     <Autocomplete
                         multiple
                         id='partners'
@@ -307,6 +413,66 @@ const LogForm = ({
                         </FormHelperText>
                     )}
                 </Grid>
+                {!readOnly && (
+                    <>
+                        {' '}
+                        <Grid item xs={12} sm={2}>
+                            <div
+                                style={{
+                                    marginTop: '1.5rem',
+                                    marginLeft: 'auto',
+                                    marginRight: 'auto',
+                                }}
+                            >
+                                <label htmlFor='contained-button-file'>
+                                    <Input
+                                        accept='image/*'
+                                        id='contained-button-file'
+                                        multiple
+                                        type='file'
+                                        sx={{ display: 'none' }}
+                                        onChange={(e) =>
+                                            addPhotos([...e.target.files])
+                                        }
+                                        inputProps={{
+                                            accept: 'image/*',
+                                            multiple: true,
+                                        }}
+                                    />
+                                    <Button
+                                        variant='contained'
+                                        component='span'
+                                    >
+                                        Upload photos
+                                    </Button>
+                                </label>
+                            </div>
+                        </Grid>
+                        {photos && photos.length !== 0 && (
+                            <Grid item xs={12} sm={12}>
+                                <Box
+                                    sx={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    {photos.map((photo, index) => (
+                                        <PhotoPreview
+                                            key={photo.name}
+                                            photo={photo}
+                                            removePhoto={() =>
+                                                removePhoto(index)
+                                            }
+                                        />
+                                    ))}
+                                </Box>
+                            </Grid>
+                        )}
+                    </>
+                )}
+
                 <Grid item xs={12} sm={12}>
                     <TextField
                         sx={{ width: '100%' }}

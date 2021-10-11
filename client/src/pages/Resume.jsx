@@ -94,7 +94,6 @@ function DivingResume() {
                     title={'Delete log'}
                     handleConfirm={() => {
                         deleteLog(deleteModalId);
-                        console.log('delete log', deleteModalId);
                     }}
                     isOpen={openDeleteModal}
                     id={deleteModalId}

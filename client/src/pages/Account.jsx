@@ -65,7 +65,6 @@ function Account() {
 
             uploadBytes(storageRef, image).then((snapshot) => {
                 getDownloadURL(storageRef).then((downloadURL) => {
-                    console.log('File available at', downloadURL);
                     updateProfileImage(downloadURL);
                 });
             });

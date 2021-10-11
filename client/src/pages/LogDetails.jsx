@@ -7,15 +7,28 @@ import { auth, db, dynamicApiKey } from '../config/firebase';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import {
     Box,
+    Card,
+    CardContent,
     CircularProgress,
     Container,
     createTheme,
+    Grid,
     ThemeProvider,
     Typography,
 } from '@mui/material';
 import { coordinateMatch, getCoordinateObj } from '../helper/helper';
 import { LogForm } from './InsertLog';
 import { fromUnixTime } from 'date-fns';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper-bundle.min.css';
+import 'swiper/swiper.min.css';
+import SwiperCore, {
+    Navigation,
+    Pagination,
+    Mousewheel,
+    Keyboard,
+} from 'swiper';
+SwiperCore.use([Navigation, Pagination, Mousewheel, Keyboard]);
 
 const theme = createTheme();
 
@@ -74,8 +87,49 @@ function LogDetails() {
                         setOpenMapModal={() => {}}
                         stops={data?.stops ?? []}
                         setStops={() => {}}
+                        setPhotos={() => {}}
                         readOnly={true}
                     />
+                    {data?.photosUrl && data.photosUrl.length !== 0 && (
+                        <Card sx={{ width: '100%', marginTop: '2rem' }}>
+                            <CardContent>
+                                <Grid container spacing={2}>
+                                    <Grid
+                                        item
+                                        xs={12}
+                                        sx={{ marginBottom: '1rem' }}
+                                    >
+                                        <Typography
+                                            component='h1'
+                                            variant='h4'
+                                            sx={{
+                                                marginBottom: '2rem',
+                                            }}
+                                        >
+                                            Image gallery
+                                        </Typography>
+                                        <Swiper
+                                            navigation={true}
+                                            pagination={true}
+                                            keyboard={true}
+                                            className='mySwiper'
+                                            autoHeight={true}
+                                            spaceBetween={20}
+                                            loop={true}
+                                        >
+                                            {data.photosUrl.map((element) => {
+                                                return (
+                                                    <SwiperSlide>
+                                                        <img src={element} />
+                                                    </SwiperSlide>
+                                                );
+                                            })}
+                                        </Swiper>
+                                    </Grid>
+                                </Grid>
+                            </CardContent>
+                        </Card>
+                    )}
                 </Box>
             </Container>
         </ThemeProvider>

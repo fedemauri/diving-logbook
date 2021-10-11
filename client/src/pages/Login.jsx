@@ -75,7 +75,6 @@ export default function SignIn() {
     };
 
     const sendPasswordReset = (email) => {
-        console.log(email);
         sendPasswordResetEmail(auth, email)
             .then(() => {
                 setOpenSnackBar({
