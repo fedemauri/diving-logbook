@@ -261,7 +261,7 @@ const Info = ({ data }) => {
                         variant='h4'
                         sx={{
                             textAlign: 'center',
-                            width: '50%',
+                            width: '80%',
                             margin: '0',
                             boxSizing: 'border-box',
                         }}
@@ -284,7 +284,7 @@ const Info = ({ data }) => {
                         variant='h4'
                         sx={{
                             textAlign: 'center',
-                            width: '50%',
+                            width: '80%',
                             margin: '0',
                             boxSizing: 'border-box',
                         }}
@@ -307,7 +307,7 @@ const Info = ({ data }) => {
                         variant='h4'
                         sx={{
                             textAlign: 'center',
-                            width: '50%',
+                            width: '80%',
                             margin: '0',
                             boxSizing: 'border-box',
                         }}
@@ -330,7 +330,7 @@ const Info = ({ data }) => {
                         variant='h4'
                         sx={{
                             textAlign: 'center',
-                            width: '50%',
+                            width: '80%',
                             margin: '0',
                             boxSizing: 'border-box',
                         }}

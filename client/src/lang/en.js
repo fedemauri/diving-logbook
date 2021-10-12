@@ -45,7 +45,7 @@ const en = {
     'dive knife': 'Dive Knife',
     'backup mask': 'Backup mask',
     camera: 'Camera',
-    Equipments: 'Equipments',
+    equipments: 'Equipments',
     'tools and equipment': 'Tools and equipment',
     'scuba tank': 'Scuba tank',
     'cylinder capacity': 'Cylinder capacity',
@@ -56,7 +56,7 @@ const en = {
     'semi dry suit': 'Semi-dry suit',
     'wet suit': 'Wet suit',
     'thickness of the suit': 'Thickness of the suit',
-    Accessories: 'accessories',
+    accessories: 'Accessories',
     name: 'Name',
     'diving parameters': 'Diving parameters',
     'temperature tank pressure': 'Temperature & tank pressure',
@@ -80,6 +80,9 @@ const en = {
     time: 'Time',
     details: 'Details',
     delete: 'Delete',
+    'no description': 'No description',
+    'sign out': 'Sign Out',
+    'change password': 'Reset/change password',
 };
 
 export default en;

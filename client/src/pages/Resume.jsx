@@ -195,7 +195,7 @@ const LogCard = ({ data, index, setOpenDeleteModal, setDeleteModalId }) => {
                     component='img'
                     height='194'
                     image={coordinateLink}
-                    alt='Paella dish'
+                    alt='diving map'
                 />
 
                 <CardContent>
@@ -242,7 +242,7 @@ const LogCard = ({ data, index, setOpenDeleteModal, setDeleteModalId }) => {
                                         </ValueContainer>
                                         <MeasureContainer>
                                             <FormattedMessage
-                                                id='Time'
+                                                id='time'
                                                 defaultMessage='Time'
                                             />
                                         </MeasureContainer>
@@ -282,7 +282,12 @@ const LogCard = ({ data, index, setOpenDeleteModal, setDeleteModalId }) => {
                                 color: '#afafaf',
                             }}
                         >
-                            {'- No description -'}
+                            {'-  '}
+                            <FormattedMessage
+                                id='no description'
+                                defaultMessage='No description'
+                            />
+                            {'  -'}
                         </Typography>
                     )}
                 </CardContent>

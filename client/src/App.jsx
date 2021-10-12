@@ -20,7 +20,13 @@ function App() {
     const [isReady, setIsReady] = useState(false);
     const [lang, setLang] = useState('en');
 
+    const userLang = localStorage.getItem('lang');
+
     useEffect(() => {
+        if (userLang && userLang !== lang) {
+            setLang(userLang);
+        }
+
         onAuthStateChanged(auth, (userLogged) => {
             if (user) {
                 setUser(userLogged);
@@ -33,6 +39,10 @@ function App() {
         });
     }, []);
 
+    useEffect(() => {
+        localStorage.setItem('lang', lang);
+    }, [lang]);
+
     if (isReady)
         return (
             <div className='App'>
@@ -44,8 +54,8 @@ function App() {
                         }}
                     >
                         <IntlProvider
-                            messages={lang === 'en' ? en : it}
-                            locale={lang}
+                            messages={userLang === 'it' ? it : en}
+                            locale={userLang ?? 'en'}
                             defaultLocale='en'
                         >
                             <BrowserRouter>

@@ -795,13 +795,11 @@ const Equipments = ({ values, handleChange, readOnly, intl }) => {
                     id='panel1bh-header'
                 >
                     <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                        Equipments
                         {intl.formatMessage({
                             id: 'equipments',
                         })}
                     </Typography>
                     <Typography sx={{ color: 'text.secondary' }}>
-                        Tools and equipment
                         {intl.formatMessage({
                             id: 'tools and equipment',
                         })}
@@ -953,7 +951,7 @@ const Equipments = ({ values, handleChange, readOnly, intl }) => {
                             <FormControl sx={{ m: 1, width: '100%' }}>
                                 <InputLabel id='accessories-label'>
                                     {intl.formatMessage({
-                                        id: 'name',
+                                        id: 'accessories',
                                     })}
                                 </InputLabel>
                                 <Select
@@ -973,7 +971,7 @@ const Equipments = ({ values, handleChange, readOnly, intl }) => {
                                     input={
                                         <OutlinedInput
                                             label={intl.formatMessage({
-                                                id: 'name',
+                                                id: 'accessories',
                                             })}
                                         />
                                     }
@@ -1012,7 +1010,7 @@ const DivingParams = ({ values, handleChange, readOnly, intl }) => {
                     </Typography>
                     <Typography sx={{ color: 'text.secondary' }}>
                         {intl.formatMessage({
-                            id: 'Temperature tank pressure',
+                            id: 'temperature tank pressure',
                         })}
                     </Typography>
                 </AccordionSummary>

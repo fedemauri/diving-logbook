@@ -14,7 +14,7 @@ import {
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Container } from '@nivo/core';
 import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
-import { injectIntl } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 
 function Account({ intl }) {
     const [openSnackBar, setOpenSnackBar] = useState({
@@ -136,14 +136,20 @@ function Account({ intl }) {
                                     sx={{ mt: 3 }}
                                     onClick={sendPasswordReset}
                                 >
-                                    Reset/change password
+                                    <FormattedMessage
+                                        id='change password'
+                                        defaultMessage='Reset/change password'
+                                    />
                                 </Button>
                                 <Button
                                     variant='contained'
                                     sx={{ mt: 3 }}
                                     onClick={signOutHandler}
                                 >
-                                    Sign Out
+                                    <FormattedMessage
+                                        id='sign out'
+                                        defaultMessage='Sign Out'
+                                    />
                                 </Button>
                             </Box>
                             {openSnackBar && (
