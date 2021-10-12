@@ -9,6 +9,7 @@ import {
 import { Box } from '@mui/system';
 import { LoadScript, GoogleMap, Marker } from '@react-google-maps/api';
 import React, { useRef } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { dynamicApiKey } from '../config/firebase';
 
 function MapCoordinateModal({ handleClose, open, setCoordinate }) {
@@ -42,10 +43,18 @@ function MapCoordinateModal({ handleClose, open, setCoordinate }) {
             open={!!open}
             onClose={() => handleClose(false)}
         >
-            <DialogTitle>Select coordinate point</DialogTitle>
+            <DialogTitle>
+                <FormattedMessage
+                    id='select coordinate point'
+                    defaultMessage='Select coordinate point'
+                />
+            </DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Double click on map to select a point
+                    <FormattedMessage
+                        id='double click on map to select a point'
+                        defaultMessage='Double click on map to select a point'
+                    />
                 </DialogContentText>
                 <Box
                     sx={{

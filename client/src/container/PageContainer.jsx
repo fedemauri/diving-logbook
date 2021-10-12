@@ -18,10 +18,11 @@ import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
 import AddIcon from '@mui/icons-material/Add';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { auth } from '../config/firebase';
 import { Link } from 'react-router-dom';
-import { Avatar } from '@mui/material';
+import { Avatar, FormControl, MenuItem, Select } from '@mui/material';
+import LangContext from './LangContext';
+import { FormattedMessage, injectIntl } from 'react-intl';
 
 const drawerWidth = 240;
 
@@ -94,8 +95,9 @@ const Drawer = styled(MuiDrawer, {
     })
 );
 
-export default function PageContainer({ children }) {
+function PageContainer({ intl, children }) {
     const theme = useTheme();
+    const lang = React.useContext(LangContext);
     const [open, setOpen] = React.useState(false);
 
     const user = auth.currentUser;
@@ -110,22 +112,22 @@ export default function PageContainer({ children }) {
 
     const menu = [
         {
-            title: 'Home',
+            title: intl.formatMessage({ id: 'home' }),
             icon: <HomeIcon />,
             link: '/',
         },
         {
-            title: 'Resume',
+            title: intl.formatMessage({ id: 'resume' }),
             icon: <AssignmentIcon />,
             link: '/resume',
         },
         {
-            title: 'Insert',
+            title: intl.formatMessage({ id: 'insert' }),
             icon: <AddIcon />,
             link: '/create-log',
         },
         {
-            title: 'Account',
+            title: intl.formatMessage({ id: 'account' }),
             icon: (
                 <Avatar src={user?.photoURL} sx={{ width: 24, height: 24 }} />
             ),
@@ -142,21 +144,55 @@ export default function PageContainer({ children }) {
                 open={open}
             >
                 <Toolbar>
-                    <IconButton
-                        color='inherit'
-                        aria-label='open drawer'
-                        onClick={handleDrawerOpen}
-                        edge='start'
+                    <Box
                         sx={{
-                            marginRight: '36px',
-                            ...(open && { display: 'none' }),
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            width: '100%',
                         }}
                     >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant='h6' noWrap component='div'>
-                        Diving LogBook
-                    </Typography>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'start',
+                            }}
+                        >
+                            <IconButton
+                                color='inherit'
+                                aria-label='open drawer'
+                                onClick={handleDrawerOpen}
+                                edge='start'
+                                sx={{
+                                    marginRight: '36px',
+                                    ...(open && { display: 'none' }),
+                                }}
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                            <Typography variant='h6' noWrap component='div'>
+                                <FormattedMessage
+                                    id='diving logbook'
+                                    defaultMessage='Diving LogBook'
+                                />
+                            </Typography>
+                        </Box>
+                        <FormControl variant='standard' sx={{ color: 'white' }}>
+                            <Select
+                                labelId='lang-select-label'
+                                id='lang-select'
+                                value={lang.lang}
+                                onChange={(value) => {
+                                    lang.setLang(value.target.value);
+                                }}
+                                sx={{ color: 'white' }}
+                            >
+                                <MenuItem value={'it'}>Italiano</MenuItem>
+                                <MenuItem value={'en'}>English</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
                 </Toolbar>
             </AppBar>
             <Drawer variant='permanent' open={open}>
@@ -192,3 +228,5 @@ export default function PageContainer({ children }) {
         </Box>
     );
 }
+
+export default injectIntl(PageContainer);

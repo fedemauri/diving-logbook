@@ -10,10 +10,15 @@ import { auth } from './config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { BrowserRouter } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
+import { IntlProvider } from 'react-intl';
+import { LangProvider } from './container/LangContext';
+import en from './lang/en';
+import it from './lang/it';
 
 function App() {
     const [user, setUser] = useState(null);
     const [isReady, setIsReady] = useState(false);
+    const [lang, setLang] = useState('en');
 
     useEffect(() => {
         onAuthStateChanged(auth, (userLogged) => {
@@ -32,11 +37,24 @@ function App() {
         return (
             <div className='App'>
                 <Suspense fallback={<CircularProgress />}>
-                    <BrowserRouter>
-                        <PageContainer>
-                            <Router />
-                        </PageContainer>
-                    </BrowserRouter>
+                    <LangProvider
+                        value={{
+                            lang,
+                            setLang,
+                        }}
+                    >
+                        <IntlProvider
+                            messages={lang === 'en' ? en : it}
+                            locale={lang}
+                            defaultLocale='en'
+                        >
+                            <BrowserRouter>
+                                <PageContainer>
+                                    <Router />
+                                </PageContainer>
+                            </BrowserRouter>
+                        </IntlProvider>
+                    </LangProvider>
                 </Suspense>
             </div>
         );

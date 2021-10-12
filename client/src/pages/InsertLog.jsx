@@ -40,6 +40,7 @@ import { auth, db, storage } from '../config/firebase';
 import { coordinateMatch } from '../helper/helper';
 import { isValid } from 'date-fns';
 import { ref, uploadBytes, getDownloadURL } from '@firebase/storage';
+import { FormattedMessage, injectIntl } from 'react-intl';
 const MapCoordinateModal = React.lazy(() =>
     import(
         /* webpackChunkName: "MapCoordinateModal" */ '../container/MapCoordinateModal'
@@ -48,7 +49,7 @@ const MapCoordinateModal = React.lazy(() =>
 
 const theme = createTheme();
 
-function CreateLog() {
+function CreateLog({ intl }) {
     const [values, setValue] = useState({});
     const [stops, setStops] = useState([]);
     const [photos, setPhotos] = useState([]);
@@ -144,7 +145,10 @@ function CreateLog() {
                         <ControlPointIcon />
                     </Avatar>
                     <Typography component='h1' variant='h5'>
-                        Create Diving Log
+                        <FormattedMessage
+                            id='create diving log'
+                            defaultMessage='Create Diving Log'
+                        />
                     </Typography>
                     <LogForm
                         handleSubmit={handleSubmit}
@@ -156,6 +160,7 @@ function CreateLog() {
                         photos={photos}
                         setPhotos={setPhotos}
                         readOnly={false}
+                        intl={intl}
                     />
                 </Box>
                 {openMapModal && (
@@ -203,6 +208,7 @@ const LogForm = ({
     photos,
     setPhotos,
     readOnly,
+    intl,
 }) => {
     const removePhoto = (index) => {
         const tempPhotos = [...photos];
@@ -247,7 +253,7 @@ const LogForm = ({
                 <Grid item xs={12} sm={4}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DateTimePicker
-                            label='Date & Time'
+                            label={intl.formatMessage({ id: 'date & time' })}
                             name='datetime'
                             id='datetime'
                             value={values.date ?? null}
@@ -274,7 +280,7 @@ const LogForm = ({
                         required
                         fullWidth
                         name='place'
-                        label='Place'
+                        label={intl.formatMessage({ id: 'place' })}
                         type='text'
                         id='place'
                         disabled={readOnly}
@@ -289,7 +295,7 @@ const LogForm = ({
                         margin='normal'
                         fullWidth
                         name='coordinate'
-                        label='Coordinate'
+                        label={intl.formatMessage({ id: 'coordinate' })}
                         type='text'
                         id='coordinate'
                         disabled={readOnly}
@@ -326,7 +332,7 @@ const LogForm = ({
                     />
                     {!readOnly && (
                         <FormHelperText id='component-helper-text'>
-                            Use "45.160, 8.969" format
+                            {intl.formatMessage({ id: 'coordinate example' })}
                         </FormHelperText>
                     )}
                 </Grid>
@@ -334,28 +340,32 @@ const LogForm = ({
                     values={values}
                     handleChange={handleChange}
                     readOnly={readOnly}
+                    intl={intl}
                 />
                 <DecompressionStops
                     stops={stops}
                     setStops={setStops}
                     readOnly={readOnly}
+                    intl={intl}
                 />
                 <DivingParams
                     values={values}
                     handleChange={handleChange}
                     readOnly={readOnly}
+                    intl={intl}
                 />
                 <Equipments
                     values={values}
                     handleChange={handleChange}
                     readOnly={readOnly}
+                    intl={intl}
                 />
                 <Grid item xs={12} sm={readOnly ? 6 : 5}>
                     <TextField
                         margin='normal'
                         fullWidth
                         name='guide'
-                        label='Guide'
+                        label={intl.formatMessage({ id: 'guide' })}
                         type='text'
                         id='guide'
                         disabled={readOnly}
@@ -400,7 +410,9 @@ const LogForm = ({
                                 margin='normal'
                                 fullWidth
                                 name='partners'
-                                label='Partners'
+                                label={intl.formatMessage({
+                                    id: 'partners',
+                                })}
                                 type='text'
                                 id='partners'
                                 disabled={readOnly}
@@ -409,7 +421,9 @@ const LogForm = ({
                     />
                     {!readOnly && (
                         <FormHelperText id='component-helper-text'>
-                            Insert name and press enter to add partner tag
+                            {intl.formatMessage({
+                                id: 'insert name and press enter to add partner tag',
+                            })}
                         </FormHelperText>
                     )}
                 </Grid>
@@ -443,7 +457,9 @@ const LogForm = ({
                                         variant='contained'
                                         component='span'
                                     >
-                                        Upload photos
+                                        {intl.formatMessage({
+                                            id: 'upload photos',
+                                        })}
                                     </Button>
                                 </label>
                             </div>
@@ -456,6 +472,7 @@ const LogForm = ({
                                         display: 'flex',
                                         flexDirection: 'row',
                                         alignItems: 'center',
+                                        overflow: 'auto',
                                     }}
                                 >
                                     {photos.map((photo, index) => (
@@ -476,7 +493,9 @@ const LogForm = ({
                 <Grid item xs={12} sm={12}>
                     <TextField
                         sx={{ width: '100%' }}
-                        placeholder='Notes'
+                        placeholder={intl.formatMessage({
+                            id: 'notes',
+                        })}
                         multiline
                         rows={3}
                         disabled={readOnly}
@@ -493,14 +512,16 @@ const LogForm = ({
                     variant='contained'
                     sx={{ mt: 3 }}
                 >
-                    Save
+                    {intl.formatMessage({
+                        id: 'Save',
+                    })}
                 </Button>
             )}
         </Box>
     );
 };
 
-const DivingLog = ({ values, handleChange, readOnly }) => {
+const DivingLog = ({ values, handleChange, readOnly, intl }) => {
     return (
         <>
             <Grid item xs={12} sm={6}>
@@ -508,7 +529,9 @@ const DivingLog = ({ values, handleChange, readOnly }) => {
                     margin='normal'
                     fullWidth
                     name='max-depth'
-                    label='Max Depth'
+                    label={intl.formatMessage({
+                        id: 'max depth',
+                    })}
                     type='number'
                     id='max-depth'
                     required
@@ -530,7 +553,9 @@ const DivingLog = ({ values, handleChange, readOnly }) => {
                     fullWidth
                     name='dive-time'
                     required
-                    label='Dive Time'
+                    label={intl.formatMessage({
+                        id: 'dive time',
+                    })}
                     type='number'
                     id='dive-time'
                     disabled={readOnly}
@@ -549,7 +574,7 @@ const DivingLog = ({ values, handleChange, readOnly }) => {
     );
 };
 
-const DecompressionStops = ({ stops, setStops, readOnly }) => {
+const DecompressionStops = ({ stops, setStops, readOnly, intl }) => {
     const createNewStop = () => {
         setStops([...stops, { meter: '', time: '' }]);
     };
@@ -578,7 +603,9 @@ const DecompressionStops = ({ stops, setStops, readOnly }) => {
                                 margin='normal'
                                 fullWidth
                                 name='m-stop'
-                                label='Meter stop'
+                                label={intl.formatMessage({
+                                    id: 'meter stop',
+                                })}
                                 type='number'
                                 id='m-stop'
                                 disabled={readOnly}
@@ -604,7 +631,9 @@ const DecompressionStops = ({ stops, setStops, readOnly }) => {
                                 margin='normal'
                                 fullWidth
                                 name='min-stop'
-                                label='Time stop'
+                                label={intl.formatMessage({
+                                    id: 'time stop',
+                                })}
                                 type='number'
                                 id='min-stop'
                                 disabled={readOnly}
@@ -652,10 +681,14 @@ const DecompressionStops = ({ stops, setStops, readOnly }) => {
                     id='panel1bh-header'
                 >
                     <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                        Decompression Stops
+                        {intl.formatMessage({
+                            id: 'decompression stops',
+                        })}
                     </Typography>
                     <Typography sx={{ color: 'text.secondary' }}>
-                        Insert stops
+                        {intl.formatMessage({
+                            id: 'insert stops',
+                        })}
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -678,7 +711,9 @@ const DecompressionStops = ({ stops, setStops, readOnly }) => {
                                         variant='h5'
                                         sx={{ marginTop: '1rem' }}
                                     >
-                                        Insert stop
+                                        {intl.formatMessage({
+                                            id: 'insert stops',
+                                        })}
                                     </Typography>{' '}
                                     <Button
                                         variant='outline'
@@ -699,16 +734,56 @@ const DecompressionStops = ({ stops, setStops, readOnly }) => {
     );
 };
 
-const Equipments = ({ values, handleChange, readOnly }) => {
+const Equipments = ({ values, handleChange, readOnly, intl }) => {
     const accessoriesOptions = [
-        { name: 'Dive computer', id: 'computer' },
-        { name: 'Dive Lights', id: 'lights' },
-        { name: 'Compass', id: 'compass' },
-        { name: 'Gloves', id: 'gloves' },
-        { name: 'Surface Signaling Devices', id: 'ssd' },
-        { name: 'Dive Knife', id: 'knife' },
-        { name: 'Backup mask', id: 'backupmask' },
-        { name: 'Camera', id: 'camera' },
+        {
+            name: intl.formatMessage({
+                id: 'dive computer',
+            }),
+            id: 'computer',
+        },
+        {
+            name: intl.formatMessage({
+                id: 'dive lights',
+            }),
+            id: 'lights',
+        },
+        {
+            name: intl.formatMessage({
+                id: 'compass',
+            }),
+            id: 'compass',
+        },
+        {
+            name: intl.formatMessage({
+                id: 'gloves',
+            }),
+            id: 'gloves',
+        },
+        {
+            name: intl.formatMessage({
+                id: 'surface signaling devices',
+            }),
+            id: 'ssd',
+        },
+        {
+            name: intl.formatMessage({
+                id: 'dive knife',
+            }),
+            id: 'knife',
+        },
+        {
+            name: intl.formatMessage({
+                id: 'backup mask',
+            }),
+            id: 'backupmask',
+        },
+        {
+            name: intl.formatMessage({
+                id: 'camera',
+            }),
+            id: 'camera',
+        },
     ];
 
     return (
@@ -721,9 +796,15 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                 >
                     <Typography sx={{ width: '33%', flexShrink: 0 }}>
                         Equipments
+                        {intl.formatMessage({
+                            id: 'equipments',
+                        })}
                     </Typography>
                     <Typography sx={{ color: 'text.secondary' }}>
                         Tools and equipment
+                        {intl.formatMessage({
+                            id: 'tools and equipment',
+                        })}
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -731,7 +812,9 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={12}>
                             <Typography variant='h5' sx={{ marginTop: '1rem' }}>
-                                Scuba tank
+                                {intl.formatMessage({
+                                    id: 'scuba tank',
+                                })}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -739,7 +822,9 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                 margin='normal'
                                 fullWidth
                                 name='capacity'
-                                label='Cylinder capacity'
+                                label={intl.formatMessage({
+                                    id: 'cylinder capacity',
+                                })}
                                 type='number'
                                 id='capacity'
                                 disabled={readOnly}
@@ -765,7 +850,9 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                 margin='normal'
                                 fullWidth
                                 name='oxigen'
-                                label='%O2'
+                                label={intl.formatMessage({
+                                    id: '%02',
+                                })}
                                 type='number'
                                 id='oxigen'
                                 disabled={readOnly}
@@ -793,7 +880,9 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                 margin='normal'
                                 fullWidth
                                 name='suit-type'
-                                label='Suit type'
+                                label={intl.formatMessage({
+                                    id: 'suit type',
+                                })}
                                 select
                                 id='suit-type'
                                 type='number'
@@ -805,13 +894,25 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                         'suitType'
                                     );
                                 }}
-                                placeholder={'Select suit type'}
+                                placeholder={intl.formatMessage({
+                                    id: 'select suit type',
+                                })}
                             >
-                                <MenuItem value='drysuit'>Dry suit</MenuItem>
-                                <MenuItem value='semidrysuit'>
-                                    Semi-dry suit
+                                <MenuItem value='drysuit'>
+                                    {intl.formatMessage({
+                                        id: 'dry suit',
+                                    })}
                                 </MenuItem>
-                                <MenuItem value='wetsuit'>Wet suit</MenuItem>
+                                <MenuItem value='semidrysuit'>
+                                    {intl.formatMessage({
+                                        id: 'semi dry suit',
+                                    })}
+                                </MenuItem>
+                                <MenuItem value='wetsuit'>
+                                    {intl.formatMessage({
+                                        id: 'wet suit',
+                                    })}
+                                </MenuItem>
                             </TextField>
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -819,7 +920,9 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                 margin='normal'
                                 fullWidth
                                 name='thickness'
-                                label='Thickness of the suit'
+                                label={intl.formatMessage({
+                                    id: 'thickness of the suit',
+                                })}
                                 type='number'
                                 id='thickness'
                                 disabled={readOnly}
@@ -841,13 +944,17 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                         </Grid>
                         <Grid item xs={12} sm={12}>
                             <Typography variant='h5' sx={{ marginTop: '1rem' }}>
-                                Accessories
+                                {intl.formatMessage({
+                                    id: 'Accessories',
+                                })}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={12}>
                             <FormControl sx={{ m: 1, width: '100%' }}>
                                 <InputLabel id='accessories-label'>
-                                    Name
+                                    {intl.formatMessage({
+                                        id: 'name',
+                                    })}
                                 </InputLabel>
                                 <Select
                                     fullWidth
@@ -863,7 +970,13 @@ const Equipments = ({ values, handleChange, readOnly }) => {
                                             'accessories'
                                         );
                                     }}
-                                    input={<OutlinedInput label='Name' />}
+                                    input={
+                                        <OutlinedInput
+                                            label={intl.formatMessage({
+                                                id: 'name',
+                                            })}
+                                        />
+                                    }
                                 >
                                     {accessoriesOptions.map((element) => (
                                         <MenuItem
@@ -883,7 +996,7 @@ const Equipments = ({ values, handleChange, readOnly }) => {
     );
 };
 
-const DivingParams = ({ values, handleChange, readOnly }) => {
+const DivingParams = ({ values, handleChange, readOnly, intl }) => {
     return (
         <Grid item xs={12} sm={12}>
             <Accordion sx={{ marginTop: '1rem' }} defaultExpanded={readOnly}>
@@ -893,10 +1006,14 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                     id='panel1bh-header'
                 >
                     <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                        Diving parameters
+                        {intl.formatMessage({
+                            id: 'diving parameters',
+                        })}
                     </Typography>
                     <Typography sx={{ color: 'text.secondary' }}>
-                        Temperature & tank pressure
+                        {intl.formatMessage({
+                            id: 'Temperature tank pressure',
+                        })}
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -904,7 +1021,9 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={12}>
                             <Typography variant='h5' sx={{ marginTop: '1rem' }}>
-                                Tank pressure
+                                {intl.formatMessage({
+                                    id: 'tank pressure',
+                                })}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -912,7 +1031,9 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                                 margin='normal'
                                 fullWidth
                                 name='tank-pressure-in'
-                                label='Tank pressure on enter'
+                                label={intl.formatMessage({
+                                    id: 'tank pressure on enter',
+                                })}
                                 type='number'
                                 id='tank-pressure-in'
                                 disabled={readOnly}
@@ -938,7 +1059,9 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                                 margin='normal'
                                 fullWidth
                                 name='tank-pressure-out'
-                                label='Tank pressure on exit'
+                                label={intl.formatMessage({
+                                    id: 'tank pressure on exit',
+                                })}
                                 type='number'
                                 id='tank-pressure-out'
                                 disabled={readOnly}
@@ -961,7 +1084,9 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
 
                         <Grid item xs={12} sm={12}>
                             <Typography variant='h5' sx={{ marginTop: '1rem' }}>
-                                Temperature
+                                {intl.formatMessage({
+                                    id: 'temperature',
+                                })}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -969,7 +1094,9 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                                 margin='normal'
                                 fullWidth
                                 name='air-temperature'
-                                label='Air temperature'
+                                label={intl.formatMessage({
+                                    id: 'air temperature',
+                                })}
                                 type='number'
                                 id='air-temperature'
                                 disabled={readOnly}
@@ -994,7 +1121,9 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                                 margin='normal'
                                 fullWidth
                                 name='water-temperature'
-                                label='Water temperature'
+                                label={intl.formatMessage({
+                                    id: 'water temperature',
+                                })}
                                 type='number'
                                 id='water-temperature'
                                 disabled={readOnly}
@@ -1016,7 +1145,9 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                         </Grid>
                         <Grid item xs={12} sm={12}>
                             <Typography variant='h5' sx={{ marginTop: '1rem' }}>
-                                Ballast
+                                {intl.formatMessage({
+                                    id: 'ballast',
+                                })}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={12}>
@@ -1024,7 +1155,9 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
                                 margin='normal'
                                 fullWidth
                                 name='ballast'
-                                label='Ballast'
+                                label={intl.formatMessage({
+                                    id: 'ballast',
+                                })}
                                 type='number'
                                 id='ballast'
                                 disabled={readOnly}
@@ -1048,5 +1181,5 @@ const DivingParams = ({ values, handleChange, readOnly }) => {
     );
 };
 
-export default CreateLog;
+export default injectIntl(CreateLog);
 export { LogForm, DivingLog, DecompressionStops, Equipments, DivingParams };

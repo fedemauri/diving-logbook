@@ -5,12 +5,9 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import { FormattedMessage, injectIntl } from 'react-intl';
 
-export default function ForgotPasswordModal({
-    open,
-    handleClose,
-    sendPasswordReset,
-}) {
+function ForgotPasswordModal({ open, handleClose, sendPasswordReset, intl }) {
     const [email, setEmail] = React.useState('');
 
     const handleCloseModal = () => {
@@ -18,14 +15,24 @@ export default function ForgotPasswordModal({
     };
 
     return (
-        <Dialog open={open} maxWidth={'sm'} fullWidth>
-            <DialogTitle>Reset password</DialogTitle>
+        <Dialog
+            open={open}
+            maxWidth={'sm'}
+            onClose={handleCloseModal}
+            fullWidth
+        >
+            <DialogTitle>
+                <FormattedMessage
+                    id='reset password'
+                    defaultMessage='Reset password'
+                />
+            </DialogTitle>
             <DialogContent>
                 <TextField
                     autoFocus
                     margin='dense'
                     id='name'
-                    label='Email Address'
+                    label={intl.formatMessage({ id: 'email address' })}
                     type='email'
                     fullWidth
                     variant='standard'
@@ -34,16 +41,20 @@ export default function ForgotPasswordModal({
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCloseModal}>Close</Button>
+                <Button onClick={handleCloseModal}>
+                    <FormattedMessage id='close' defaultMessage='Close' />
+                </Button>
                 <Button
                     onClick={() => {
                         if (email) sendPasswordReset(email);
                         handleCloseModal();
                     }}
                 >
-                    Send
+                    <FormattedMessage id='send' defaultMessage='Send' />
                 </Button>
             </DialogActions>
         </Dialog>
     );
 }
+
+export default injectIntl(ForgotPasswordModal);

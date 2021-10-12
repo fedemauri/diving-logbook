@@ -21,6 +21,7 @@ import {
 import { coordinateMatch } from '../helper/helper';
 import staticMap from './../images/staticmap.png';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { FormattedMessage } from 'react-intl';
 
 function DivingResume() {
     const [logs, setLogs] = useState(null);
@@ -57,10 +58,22 @@ function DivingResume() {
 
     if (isLoading) return <CircularProgress />;
     if (!logs)
-        return <Typography variant='h4'>{'No data to display'}</Typography>;
+        return (
+            <Typography variant='h4'>
+                <FormattedMessage
+                    id='no data to display'
+                    defaultMessage='No data to display'
+                />
+            </Typography>
+        );
     return (
         <div>
-            <h1>Diving resume</h1>
+            <h1>
+                <FormattedMessage
+                    id='diving resume'
+                    defaultMessage='Diving resume'
+                />
+            </h1>
             <Container component='main' maxWidth='xl'>
                 <Box
                     sx={{
@@ -89,9 +102,24 @@ function DivingResume() {
             </Container>
             {openDeleteModal && (
                 <ConfirmationModal
-                    button={'Delete log'}
-                    text={'Are you sure you want to delete the log?'}
-                    title={'Delete log'}
+                    button={
+                        <FormattedMessage
+                            id='Delete log'
+                            defaultMessage='Delete log'
+                        />
+                    }
+                    text={
+                        <FormattedMessage
+                            id='are you sure you want to delete the log?'
+                            defaultMessage='Are you sure you want to delete the log?'
+                        />
+                    }
+                    title={
+                        <FormattedMessage
+                            id='Delete log'
+                            defaultMessage='Delete log'
+                        />
+                    }
                     handleConfirm={() => {
                         deleteLog(deleteModalId);
                     }}
@@ -188,7 +216,10 @@ const LogCard = ({ data, index, setOpenDeleteModal, setDeleteModalId }) => {
                                             {data['max-depth']}
                                         </ValueContainer>
                                         <MeasureContainer>
-                                            Depth
+                                            <FormattedMessage
+                                                id='depth'
+                                                defaultMessage='Depth'
+                                            />
                                         </MeasureContainer>
                                     </InfoContainer>
                                 </Typography>
@@ -210,7 +241,10 @@ const LogCard = ({ data, index, setOpenDeleteModal, setDeleteModalId }) => {
                                             {data['dive-time']}
                                         </ValueContainer>
                                         <MeasureContainer>
-                                            Time
+                                            <FormattedMessage
+                                                id='Time'
+                                                defaultMessage='Time'
+                                            />
                                         </MeasureContainer>
                                     </InfoContainer>
                                 </Typography>
@@ -260,7 +294,12 @@ const LogCard = ({ data, index, setOpenDeleteModal, setDeleteModalId }) => {
                     }}
                 >
                     <Link href={`/details/${data.id}`} underline='hover'>
-                        <Button size='small'>Details</Button>
+                        <Button size='small'>
+                            <FormattedMessage
+                                id='details'
+                                defaultMessage='Details'
+                            />
+                        </Button>
                     </Link>
 
                     <Button
@@ -270,7 +309,7 @@ const LogCard = ({ data, index, setOpenDeleteModal, setDeleteModalId }) => {
                             setDeleteModalId(data.id);
                         }}
                     >
-                        Delete
+                        <FormattedMessage id='delete' defaultMessage='Delete' />
                     </Button>
                 </CardActions>
             </Card>

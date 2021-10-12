@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
     Box,
     CircularProgress,
@@ -18,8 +17,9 @@ import { Calendar } from '@nivo/calendar';
 import { Line } from '@nivo/line';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { formatDate, groupCount, getMax } from './../helper/helper';
+import { FormattedMessage, injectIntl } from 'react-intl';
 
-function Home() {
+function Home({ intl }) {
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const user = auth.currentUser;
@@ -77,7 +77,14 @@ function Home() {
 
     if (isLoading) return <CircularProgress />;
     if (!data)
-        return <Typography variant='h4'>{'No data to display'}</Typography>;
+        return (
+            <Typography variant='h4'>
+                <FormattedMessage
+                    id='no data to display'
+                    defaultMessage='No data to display'
+                />
+            </Typography>
+        );
     return (
         <Container component='main' maxWidth='xl'>
             <Box
@@ -177,7 +184,7 @@ const HeatMap = ({ getAllCoordinate }) => {
     const allCoordinate = getAllCoordinate();
     const markers = allCoordinate.map((element) => getCoordinateObj(element));
     const position = getCoordinateObj(allCoordinate[0]);
-    //return <h1>mappa</h1>;
+
     return (
         <LoadScript googleMapsApiKey={dynamicApiKey}>
             <GoogleMap
@@ -261,7 +268,12 @@ const Info = ({ data }) => {
                     >
                         <InfoContainer>
                             <ValueContainer>{maxDepth}</ValueContainer>
-                            <MeasureContainer>Max Depth (m)</MeasureContainer>
+                            <MeasureContainer>
+                                <FormattedMessage
+                                    id='max depth'
+                                    defaultMessage='Max Depth (m)'
+                                />
+                            </MeasureContainer>
                         </InfoContainer>
                     </Typography>
                 </InfoExtContainer>
@@ -279,7 +291,12 @@ const Info = ({ data }) => {
                     >
                         <InfoContainer>
                             <ValueContainer>{maxTime}</ValueContainer>
-                            <MeasureContainer>Max Time (min)</MeasureContainer>
+                            <MeasureContainer>
+                                <FormattedMessage
+                                    id='max time'
+                                    defaultMessage='Max Time (min)'
+                                />
+                            </MeasureContainer>
                         </InfoContainer>
                     </Typography>
                 </InfoExtContainer>
@@ -298,7 +315,10 @@ const Info = ({ data }) => {
                         <InfoContainer>
                             <ValueContainer>{totalDivingTime}</ValueContainer>
                             <MeasureContainer>
-                                Total Diving Time (min)
+                                <FormattedMessage
+                                    id='total diving time'
+                                    defaultMessage='Total Diving Time (min)'
+                                />
                             </MeasureContainer>
                         </InfoContainer>
                     </Typography>
@@ -317,7 +337,12 @@ const Info = ({ data }) => {
                     >
                         <InfoContainer>
                             <ValueContainer>{divingNumber}</ValueContainer>
-                            <MeasureContainer>Diving Count</MeasureContainer>
+                            <MeasureContainer>
+                                <FormattedMessage
+                                    id='diving count'
+                                    defaultMessage='Diving Count'
+                                />
+                            </MeasureContainer>
                         </InfoContainer>
                     </Typography>
                 </InfoExtContainer>
@@ -357,7 +382,10 @@ const DivingTimeChart = ({ data }) => {
                                 boxSizing: 'border-box',
                             }}
                         >
-                            Last 2 years divings
+                            <FormattedMessage
+                                id='last 2 years divings'
+                                defaultMessage='Last 2 years divings'
+                            />
                         </Typography>
                         <Calendar
                             height={height}
@@ -436,7 +464,7 @@ const DivingDepthChart = ({ data }) => {
                             boxSizing: 'border-box',
                         }}
                     >
-                        Deep
+                        <FormattedMessage id='deep' defaultMessage='Deep' />
                     </Typography>
                     <Line
                         data={deepDaysData}
@@ -474,5 +502,5 @@ const DivingDepthChart = ({ data }) => {
     );
 };
 
-export default Home;
+export default injectIntl(Home);
 export { HeatMap, Info, DivingTimeChart, DivingDepthChart };

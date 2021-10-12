@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { FormattedMessage } from 'react-intl';
 
 export default function ConfirmationModal({
     button,
@@ -42,7 +43,9 @@ export default function ConfirmationModal({
                     {' '}
                     {button}{' '}
                 </Button>
-                <Button onClick={handleCloseModal}>Close</Button>
+                <Button onClick={handleCloseModal}>
+                    <FormattedMessage id='close' defaultMessage='Close' />
+                </Button>
             </DialogActions>
         </Dialog>
     );

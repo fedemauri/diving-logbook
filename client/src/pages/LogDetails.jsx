@@ -28,11 +28,12 @@ import SwiperCore, {
     Mousewheel,
     Keyboard,
 } from 'swiper';
+import { FormattedMessage, injectIntl } from 'react-intl';
 SwiperCore.use([Navigation, Pagination, Mousewheel, Keyboard]);
 
 const theme = createTheme();
 
-function LogDetails() {
+function LogDetails({ intl }) {
     let { id } = useParams();
     const user = auth.currentUser;
 
@@ -89,6 +90,7 @@ function LogDetails() {
                         setStops={() => {}}
                         setPhotos={() => {}}
                         readOnly={true}
+                        intl={intl}
                     />
                     {data?.photosUrl && data.photosUrl.length !== 0 && (
                         <Card sx={{ width: '100%', marginTop: '2rem' }}>
@@ -106,7 +108,10 @@ function LogDetails() {
                                                 marginBottom: '2rem',
                                             }}
                                         >
-                                            Image gallery
+                                            <FormattedMessage
+                                                id='image gallery'
+                                                defaultMessage='Image gallery'
+                                            />
                                         </Typography>
                                         <Swiper
                                             navigation={true}
@@ -157,4 +162,4 @@ const DiveMap = ({ coordinate }) => {
     );
 };
 
-export default LogDetails;
+export default injectIntl(LogDetails);

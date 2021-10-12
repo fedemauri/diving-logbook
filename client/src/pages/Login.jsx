@@ -17,6 +17,7 @@ import { Link as RouteLink } from 'react-router-dom';
 import { useState } from 'react';
 import ForgotPasswordModal from '../container/ForgotPasswordModal';
 import { Snackbar } from '@mui/material';
+import { FormattedMessage, injectIntl } from 'react-intl';
 
 function Copyright(props) {
     return (
@@ -38,7 +39,7 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignIn() {
+function SignIn({ intl }) {
     const [error, setError] = useState('');
     const [openResetModal, setOpenResetModal] = useState(false);
     const [openSnackBar, setOpenSnackBar] = useState({
@@ -104,7 +105,10 @@ export default function SignIn() {
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component='h1' variant='h5'>
-                        Sign in
+                        <FormattedMessage
+                            id='sign in'
+                            defaultMessage='Sign in'
+                        />
                     </Typography>
                     <Box
                         component='form'
@@ -117,7 +121,7 @@ export default function SignIn() {
                             required
                             fullWidth
                             id='email'
-                            label='Email Address'
+                            label={intl.formatMessage({ id: 'email address' })}
                             name='email'
                             autoComplete='email'
                             autoFocus
@@ -127,7 +131,7 @@ export default function SignIn() {
                             required
                             fullWidth
                             name='password'
-                            label='Password'
+                            label={intl.formatMessage({ id: 'Password' })}
                             type='password'
                             id='password'
                             autoComplete='current-password'
@@ -154,7 +158,10 @@ export default function SignIn() {
                             variant='contained'
                             sx={{ mt: 3 }}
                         >
-                            Sign In
+                            <FormattedMessage
+                                id='sign in'
+                                defaultMessage='Sign In'
+                            />
                         </Button>
                         <Button
                             fullWidth
@@ -162,7 +169,10 @@ export default function SignIn() {
                             sx={{ mt: 3, mb: 2 }}
                             onClick={signInWithGoogle}
                         >
-                            Sign In with Google
+                            <FormattedMessage
+                                id='sign in with google'
+                                defaultMessage='Sign In with Google'
+                            />
                         </Button>
                         <Grid container>
                             <Grid item xs>
@@ -175,7 +185,10 @@ export default function SignIn() {
                             </Grid>
                             <Grid item>
                                 <RouteLink to='/signup' variant='body2'>
-                                    {"Don't have an account? Sign Up"}
+                                    <FormattedMessage
+                                        id="don't have an account? sign up"
+                                        defaultMessage="Don't have an account? Sign Up"
+                                    />
                                 </RouteLink>
                             </Grid>
                         </Grid>
@@ -203,3 +216,5 @@ export default function SignIn() {
         </ThemeProvider>
     );
 }
+
+export default injectIntl(SignIn);

@@ -14,8 +14,9 @@ import {
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Container } from '@nivo/core';
 import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
+import { injectIntl } from 'react-intl';
 
-function Account() {
+function Account({ intl }) {
     const [openSnackBar, setOpenSnackBar] = useState({
         open: false,
         message: '',
@@ -38,7 +39,9 @@ function Account() {
             .then(() => {
                 setOpenSnackBar({
                     open: true,
-                    message: 'Password reset email sent!',
+                    message: intl.formatMessage({
+                        id: 'password reset email sent',
+                    }),
                 });
             })
             .catch((error) => {
@@ -103,7 +106,9 @@ function Account() {
                                     />
                                     <IconButton
                                         color='primary'
-                                        aria-label='upload picture'
+                                        aria-label={intl.formatMessage({
+                                            id: 'upload picture',
+                                        })}
                                         component='span'
                                     >
                                         <Avatar
@@ -162,4 +167,4 @@ function Account() {
     );
 }
 
-export default Account;
+export default injectIntl(Account);
