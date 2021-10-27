@@ -141,16 +141,22 @@ function Home({ intl }) {
                     alignItems: 'center',
                 }}
             >
-                <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+                <Grid container spacing={1} sx={{ flexGrow: 1 }}>
                     <Grid
                         item
                         xs={12}
                         sm={12}
                         md={12}
                         lg={6}
-                        sx={{ height: 'auto', minHeight: '50vh' }}
+                        sx={{ height: 'auto', minHeight: '60vh' }}
                     >
-                        <Card sx={{ height: '100%' }}>
+                        <Card
+                            sx={{
+                                height: '100%',
+                                padding: '0',
+                                paddingTop: '1rem',
+                            }}
+                        >
                             <CardContent sx={{ height: '100%' }}>
                                 <DivingTimeChart data={data} />
                             </CardContent>
@@ -162,9 +168,15 @@ function Home({ intl }) {
                         sm={12}
                         md={12}
                         lg={6}
-                        sx={{ height: 'auto', minHeight: '50vh' }}
+                        sx={{ height: 'auto', minHeight: '60vh' }}
                     >
-                        <Card sx={{ height: '100%' }}>
+                        <Card
+                            sx={{
+                                height: '100%',
+                                padding: '0',
+                                paddingTop: '1rem',
+                            }}
+                        >
                             <CardContent sx={{ height: '100%' }}>
                                 <DivingDepthChart data={data} />
                             </CardContent>
@@ -402,9 +414,9 @@ const DivingTimeChart = ({ data }) => {
                             ]}
                             margin={{
                                 top: 40,
-                                right: 40,
+                                right: 0,
                                 bottom: 40,
-                                left: 40,
+                                left: 20,
                             }}
                             yearSpacing={40}
                             monthBorderColor='#ffffff'
@@ -470,13 +482,12 @@ const DivingDepthChart = ({ data }) => {
                         data={deepDaysData}
                         height={height - 20}
                         width={width}
-                        margin={{ top: 20, right: 20, bottom: 50, left: 50 }}
+                        margin={{ top: 20, right: 20, bottom: 50, left: 40 }}
                         xScale={{ type: 'point' }}
                         xScale={{
                             type: 'time',
                             format: '%Y-%m-%d',
                             useUTC: false,
-                            precision: 'day',
                         }}
                         xFormat='time:%Y-%m-%d'
                         yScale={{
@@ -491,6 +502,7 @@ const DivingDepthChart = ({ data }) => {
                             tickValues: 'every 2 days',
                             legend: 'days',
                             legendOffset: -12,
+                            tickRotation: 90,
                         }}
                         enablePointLabel={true}
                         useMesh={true}
