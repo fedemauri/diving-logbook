@@ -86,12 +86,13 @@ function Home({ intl }) {
             </Typography>
         );
     return (
-        <Container component='main' maxWidth='xl'>
+        <Container component='main' maxWidth='xl' sx={{ padding: 0 }}>
             <Box
                 sx={{
                     mt: 1,
                     width: '100%',
                     marginTop: 1,
+                    padding: 0,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',

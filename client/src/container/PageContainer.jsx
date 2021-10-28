@@ -221,7 +221,7 @@ function PageContainer({ intl, children }) {
                     ))}
                 </List>
             </Drawer>
-            <Box component='main' sx={{ flexGrow: 1, p: 3, overflow: 'auto' }}>
+            <Box component='main' sx={{ flexGrow: 1, p: 1, overflow: 'auto' }}>
                 <DrawerHeader />
                 {children}
             </Box>
