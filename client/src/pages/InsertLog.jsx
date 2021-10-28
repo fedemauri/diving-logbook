@@ -685,11 +685,6 @@ const DecompressionStops = ({ stops, setStops, readOnly, intl }) => {
                             id: 'decompression stops',
                         })}
                     </Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>
-                        {intl.formatMessage({
-                            id: 'insert stops',
-                        })}
-                    </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Divider light />
@@ -797,11 +792,6 @@ const Equipments = ({ values, handleChange, readOnly, intl }) => {
                     <Typography sx={{ width: '33%', flexShrink: 0 }}>
                         {intl.formatMessage({
                             id: 'equipments',
-                        })}
-                    </Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>
-                        {intl.formatMessage({
-                            id: 'tools and equipment',
                         })}
                     </Typography>
                 </AccordionSummary>
@@ -1006,11 +996,6 @@ const DivingParams = ({ values, handleChange, readOnly, intl }) => {
                     <Typography sx={{ width: '33%', flexShrink: 0 }}>
                         {intl.formatMessage({
                             id: 'diving parameters',
-                        })}
-                    </Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>
-                        {intl.formatMessage({
-                            id: 'temperature tank pressure',
                         })}
                     </Typography>
                 </AccordionSummary>
